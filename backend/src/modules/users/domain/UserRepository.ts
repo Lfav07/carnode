@@ -1,3 +1,4 @@
+import type { CreateUserInput } from "../dto/CreateUserInput.js";
 import type { User } from "./User.js";
 
 export interface UserRepository {
@@ -9,7 +10,7 @@ export interface UserRepository {
 
   findAll(): Promise<User[]>
 
-  create(user: User): Promise<User>;
+  create(input: CreateUserInput): Promise<User>;
 
   update(user: User): Promise<User>;
 
