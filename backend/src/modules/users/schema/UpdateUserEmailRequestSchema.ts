@@ -1,4 +1,5 @@
-import {z} from "zod"
-export const UpdateUserEmailRequestSchema = z.object({
+import { z } from "zod";
+
+export const updateUserEmailRequestSchema = z.object({
     email: z.email(),
 })

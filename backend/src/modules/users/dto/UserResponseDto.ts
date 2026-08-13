@@ -1,7 +1,7 @@
 export interface UserResponseDto {
   id: string;
-  keycloak_id: string;
+  keycloakId: string;
   email: string;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
