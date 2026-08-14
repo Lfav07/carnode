@@ -66,7 +66,7 @@ export class UserService {
     const user = await this.getUserByKeycloakId(keycloakId);
     return UserResponseMapper.toCurrentUserResponse(user);
   }
-  async createUser(request: CreateUserRequestDto): Promise<string> {
+  async registerUser(request: CreateUserRequestDto): Promise<string> {
     const keycloakRequest: KeycloakRegisterRequest = {
       email: request.email,
       password: request.password,
