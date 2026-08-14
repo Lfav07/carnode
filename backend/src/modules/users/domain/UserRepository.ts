@@ -1,4 +1,4 @@
-import type { CreateUserInput } from "../dto/CreateUserInput.js";
+import type { CreateUserInput } from "../dto/request/CreateUserInput.js";
 import type { User } from "./User.js";
 
 export interface UserRepository {
@@ -14,5 +14,5 @@ export interface UserRepository {
 
   update(user: User): Promise<User>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string): Promise<boolean>;
 }
