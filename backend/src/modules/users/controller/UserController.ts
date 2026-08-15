@@ -1,57 +1,83 @@
-import type { ChangePasswordDto } from "../dto/request/ChangePasswordDto.js";
-import type { CreateUserRequestDto } from "../dto/request/CreateUserRequestDto.js";
-import type { UpdateUserEmailRequestDto } from "../dto/request/UpdateUserEmailRequestDto.js";
 import type { UserChangePasswordDto } from "../dto/request/UserChangePasswordDto.js";
+import type { ChangePasswordRequest } from "../schema/ChangePasswordSchema.js";
+import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
+import type { SearchParams } from "../schema/SearchUserParamsSchema.js";
+import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSchema.js";
+import type { UserIdParams } from "../schema/userIdParamsSchema.js";
 import type { UserService } from "../service/UserService.js";
-import type { Response } from "express";
+import type { Response, Request } from "express";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  async getUsers(res: Response) {
+  //TODO: Implement Pagination
+  async getUsers(_req: Request, res: Response) {
     const users = await this.userService.getUsers();
     return res.json(users);
   }
-  async getUserById(id: string, res: Response) {
+
+  async getUserById(req: Request<UserIdParams>, res: Response) {
+    const { id } = req.params;
     const user = await this.userService.getUserById(id);
     return res.json(user);
   }
-  async getUserByKeycloakId(keycloakId: string, res: Response) {
-    const user = await this.userService.getUserByKeycloakId(keycloakId);
-    return res.json(user);
+
+  async searchUser(req: Request<{}, {}, {}, SearchParams>, res: Response) {
+    const { email, keycloakId } = req.query;
+
+    if (email) {
+      const user = await this.userService.getUserByEmail(email);
+      return res.json(user);
+    } else if (keycloakId) {
+      const user = await this.userService.getUserByKeycloakId(keycloakId);
+      return res.json(user);
+    }
   }
-  async getCurrentUser(keycloakId: string, res: Response) {
+  // TODO: Replace the temporary keycloakId path parameter with the
+  // authenticated user's keycloakId extracted from the Authorization header
+  // by authentication middleware once Keycloak integration is implemented.
+  async getCurrentUser(req: Request<{ keycloakId: string }>, res: Response) {
+    const { keycloakId } = req.params;
     const user = await this.userService.getCurrentUser(keycloakId);
     return res.json(user);
   }
-  async registerUser(request: CreateUserRequestDto, res: Response) {
-    const id = await this.userService.registerUser(request);
+
+  async registerUser(
+    req: Request<{}, {}, CreateUserRequest>,
+    res: Response,
+  ) {
+    const id = await this.userService.registerUser(req.body);
     return res.status(201).location(`/users/${id}`).send();
   }
-  async getUserByEmail(email: string, res: Response) {
-    const user = await this.userService.getUserByEmail(email);
-    return res.json(user);
-  }
+
   async updateEmail(
-    id: string,
-    request: UpdateUserEmailRequestDto,
+    req: Request<UserIdParams, {}, UpdateUserEmailRequest>,
     res: Response,
   ) {
-    await this.userService.updateEmail(id, request);
+    const { id } = req.params;
+    await this.userService.updateEmail(id, req.body);
     return res.status(204).send();
   }
-  async changePassword(id: string, request: ChangePasswordDto, res: Response) {
-    await this.userService.changePassword(id, request);
+
+  async changePassword(
+    req: Request<UserIdParams, {}, ChangePasswordRequest>,
+    res: Response,
+  ) {
+    const { id } = req.params;
+    await this.userService.changePassword(id, req.body);
     return res.status(204).send();
   }
+
   async changeCurrentUserPassword(
-    keycloakId: string,
-    request: UserChangePasswordDto,
+    req: Request<{ keycloakId: string }, {}, UserChangePasswordDto>,
     res: Response,
   ) {
-    await this.userService.changeCurrentUserPassword(keycloakId, request);
+    const { keycloakId } = req.params;
+    await this.userService.changeCurrentUserPassword(keycloakId, req.body);
     return res.status(204).send();
   }
-  async deleteUser(id: string, res: Response) {
+
+  async deleteUser(req: Request<UserIdParams>, res: Response) {
+    const { id } = req.params;
     await this.userService.deleteUser(id);
     return res.status(204).send();
   }

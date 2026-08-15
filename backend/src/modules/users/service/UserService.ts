@@ -11,6 +11,9 @@ import type { KeycloakService } from "./KeycloakService.js";
 import { UserResponseMapper } from "../dto/response/UserResponseMapper.js";
 import { InvalidPasswordError } from "./errors/InvalidPasswordError.js";
 import type { CurrentUserResponseDto } from "../dto/response/CurrentUserResponseDto.js";
+import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
+import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSchema.js";
+import type { ChangePasswordRequest } from "../schema/ChangePasswordSchema.js";
 
 export class UserService {
   constructor(
@@ -66,7 +69,7 @@ export class UserService {
     const user = await this.getUserByKeycloakId(keycloakId);
     return UserResponseMapper.toCurrentUserResponse(user);
   }
-  async registerUser(request: CreateUserRequestDto): Promise<string> {
+  async registerUser(request: CreateUserRequest): Promise<string> {
     const keycloakRequest: KeycloakRegisterRequest = {
       email: request.email,
       password: request.password,
@@ -81,7 +84,7 @@ export class UserService {
   }
   async updateEmail(
     id: string,
-    request: UpdateUserEmailRequestDto,
+    request: UpdateUserEmailRequest,
   ): Promise<void> {
     const user = await this.findUserOrThrow(id);
     await this.keycloakService.updateEmail(user.keycloakId, request.email);
@@ -89,7 +92,7 @@ export class UserService {
     await this.userRepository.update(user);
   }
 
-  async changePassword(id: string, request: ChangePasswordDto): Promise<void> {
+  async changePassword(id: string, request: ChangePasswordRequest): Promise<void> {
     const user = await this.findUserOrThrow(id);
     await this.keycloakService.changePassword(
       user.keycloakId,
