@@ -3,10 +3,10 @@ import { UserController } from "../controller/UserController.js";
 import {
   userIdParamsSchema,
   type UserIdParams,
-} from "../schema/userIdParamsSchema.js";
-import { validateParams } from "../middleware/validateParams.js";
+} from "../schema/UserIdParamsSchema.js";
+import { validateParams } from "../middleware/ValidateParams.js";
 import { createUserSchema } from "../schema/CreateUserRequestSchema.js";
-import { validateBody } from "../middleware/validateBody.js";
+import { validateBody } from "../middleware/ValidateBody.js";
 import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import {
   searchSchema,

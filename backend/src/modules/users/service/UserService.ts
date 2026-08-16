@@ -1,24 +1,20 @@
 import type { UserRepository } from "../domain/UserRepository.js";
-import type { ChangePasswordDto } from "../dto/request/ChangePasswordDto.js";
 import type { CreateUserInput } from "../dto/request/CreateUserInput.js";
-import type { CreateUserRequestDto } from "../dto/request/CreateUserRequestDto.js";
-import type { KeycloakRegisterRequest } from "../dto/request/KeycloakRegisterRequest.js";
-import type { UpdateUserEmailRequestDto } from "../dto/request/UpdateUserEmailRequestDto.js";
-import type { UserChangePasswordDto } from "../dto/request/UserChangePasswordDto.js";
+import type { IdentityRegisterRequest } from "../dto/request/IdentityRegisterRequest.js";
 import type { UserResponseDto } from "../dto/response/UserResponseDto.js";
 import { UserNotFoundError } from "./errors/UserNotFoundError.js";
-import type { KeycloakService } from "./KeycloakService.js";
 import { UserResponseMapper } from "../dto/response/UserResponseMapper.js";
 import { InvalidPasswordError } from "./errors/InvalidPasswordError.js";
 import type { CurrentUserResponseDto } from "../dto/response/CurrentUserResponseDto.js";
 import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSchema.js";
 import type { ChangePasswordRequest } from "../schema/ChangePasswordSchema.js";
+import type { IdentityProvider } from "../domain/IdentityProvider.js";
 
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly keycloakService: KeycloakService,
+    private readonly identityProvider: IdentityProvider,
   ) {}
 
   private async findUserOrThrow(id: string) {
@@ -70,11 +66,12 @@ export class UserService {
     return UserResponseMapper.toCurrentUserResponse(user);
   }
   async registerUser(request: CreateUserRequest): Promise<string> {
-    const keycloakRequest: KeycloakRegisterRequest = {
+    const keycloakRequest: IdentityRegisterRequest = {
       email: request.email,
       password: request.password,
     };
-    const keycloakId = await this.keycloakService.registerUser(keycloakRequest);
+    const keycloakId =
+      await this.identityProvider.registerUser(keycloakRequest);
     const input: CreateUserInput = {
       keycloakId: keycloakId,
       email: request.email,
@@ -87,40 +84,24 @@ export class UserService {
     request: UpdateUserEmailRequest,
   ): Promise<void> {
     const user = await this.findUserOrThrow(id);
-    await this.keycloakService.updateEmail(user.keycloakId, request.email);
+    await this.identityProvider.changeEmail(user.keycloakId, request.email);
     user.email = request.email;
     await this.userRepository.update(user);
   }
 
-  async changePassword(id: string, request: ChangePasswordRequest): Promise<void> {
+  async changePassword(
+    id: string,
+    request: ChangePasswordRequest,
+  ): Promise<void> {
     const user = await this.findUserOrThrow(id);
-    await this.keycloakService.changePassword(
+    await this.identityProvider.changePassword(
       user.keycloakId,
       request.password,
     );
   }
-
-  async changeCurrentUserPassword(
-    keycloakId: string,
-    request: UserChangePasswordDto,
-  ): Promise<void> {
-    const user = await this.findUserByKeycloakIdOrThrow(keycloakId);
-    const isValid = await this.keycloakService.verifyPassword(
-      user.keycloakId,
-      request.currentPassword,
-    );
-    if (!isValid) {
-      throw new InvalidPasswordError("Current password is incorrect");
-    }
-    await this.keycloakService.changePassword(
-      user.keycloakId,
-      request.newPassword,
-    );
-  }
-
   async deleteUser(id: string): Promise<void> {
     const user = await this.findUserOrThrow(id);
-    await this.keycloakService.deleteUser(user.keycloakId);
+    await this.identityProvider.deleteUser(user.keycloakId);
     await this.userRepository.delete(id);
   }
 }

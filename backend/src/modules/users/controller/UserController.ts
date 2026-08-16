@@ -3,7 +3,7 @@ import type { ChangePasswordRequest } from "../schema/ChangePasswordSchema.js";
 import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import type { SearchParams } from "../schema/SearchUserParamsSchema.js";
 import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSchema.js";
-import type { UserIdParams } from "../schema/userIdParamsSchema.js";
+import type { UserIdParams } from "../schema/UserIdParamsSchema.js";
 import type { UserService } from "../service/UserService.js";
 import type { Response, Request } from "express";
 export class UserController {
@@ -31,6 +31,7 @@ export class UserController {
       const user = await this.userService.getUserByKeycloakId(keycloakId);
       return res.json(user);
     }
+    throw new Error("Failed to search user for params " + req.query)
   }
   // TODO: Replace the temporary keycloakId path parameter with the
   // authenticated user's keycloakId extracted from the Authorization header
@@ -66,16 +67,7 @@ export class UserController {
     await this.userService.changePassword(id, req.body);
     return res.status(204).send();
   }
-
-  async changeCurrentUserPassword(
-    req: Request<{ keycloakId: string }, {}, UserChangePasswordDto>,
-    res: Response,
-  ) {
-    const { keycloakId } = req.params;
-    await this.userService.changeCurrentUserPassword(keycloakId, req.body);
-    return res.status(204).send();
-  }
-
+  
   async deleteUser(req: Request<UserIdParams>, res: Response) {
     const { id } = req.params;
     await this.userService.deleteUser(id);

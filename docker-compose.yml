@@ -1,0 +1,51 @@
+services: 
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      KC_HOSTNAME_PORT: 8080
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: kc_admin
+      KC_DB_PASSWORD: kc_password
+      KC_HOSTNAME: localhost
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    command: ["start-dev"]
+    ports:
+      - "7080:8080"
+      - "9000:9000"
+    networks:
+      - backend
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+
+  keycloak-db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: kc_admin
+      POSTGRES_PASSWORD: kc_password
+      POSTGRES_DB: keycloak
+    ports:
+      - "5433:5432"
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kc_admin -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  backend:
+
+volumes:
+  keycloak_data:
+  app_data:
+      
