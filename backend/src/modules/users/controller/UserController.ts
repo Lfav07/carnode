@@ -1,4 +1,3 @@
-import type { UserChangePasswordDto } from "../dto/request/UserChangePasswordDto.js";
 import type { ChangePasswordRequest } from "../schema/ChangePasswordSchema.js";
 import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import type { SearchParams } from "../schema/SearchUserParamsSchema.js";
@@ -31,21 +30,19 @@ export class UserController {
       const user = await this.userService.getUserByKeycloakId(keycloakId);
       return res.json(user);
     }
-    throw new Error("Failed to search user for params " + req.query)
+    throw new Error("Failed to search user for params " + req.query);
   }
-  // TODO: Replace the temporary keycloakId path parameter with the
-  // authenticated user's keycloakId extracted from the Authorization header
-  // by authentication middleware once Keycloak integration is implemented.
-  async getCurrentUser(req: Request<{ keycloakId: string }>, res: Response) {
-    const { keycloakId } = req.params;
-    const user = await this.userService.getCurrentUser(keycloakId);
+
+  async getCurrentUser(req: Request, res: Response) {
+    if (!req.user?.sub) {
+      res.statusCode = 401;
+      return res;
+    }
+    const user = await this.userService.getCurrentUser(req.user?.sub);
     return res.json(user);
   }
 
-  async registerUser(
-    req: Request<{}, {}, CreateUserRequest>,
-    res: Response,
-  ) {
+  async registerUser(req: Request<{}, {}, CreateUserRequest>, res: Response) {
     const id = await this.userService.registerUser(req.body);
     return res.status(201).location(`/users/${id}`).send();
   }
@@ -67,7 +64,7 @@ export class UserController {
     await this.userService.changePassword(id, req.body);
     return res.status(204).send();
   }
-  
+
   async deleteUser(req: Request<UserIdParams>, res: Response) {
     const { id } = req.params;
     await this.userService.deleteUser(id);

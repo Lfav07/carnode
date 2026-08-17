@@ -4,7 +4,6 @@ import type { IdentityRegisterRequest } from "../dto/request/IdentityRegisterReq
 import type { UserResponseDto } from "../dto/response/UserResponseDto.js";
 import { UserNotFoundError } from "./errors/UserNotFoundError.js";
 import { UserResponseMapper } from "../dto/response/UserResponseMapper.js";
-import { InvalidPasswordError } from "./errors/InvalidPasswordError.js";
 import type { CurrentUserResponseDto } from "../dto/response/CurrentUserResponseDto.js";
 import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSchema.js";
@@ -72,6 +71,7 @@ export class UserService {
     };
     const keycloakId =
       await this.identityProvider.registerUser(keycloakRequest);
+      console.log(keycloakId)
     const input: CreateUserInput = {
       keycloakId: keycloakId,
       email: request.email,

@@ -84,10 +84,11 @@ export class FetchHttpClient implements HttpClient {
       signal,
     };
 
-    if (body !== undefined) {
-      init.body = JSON.stringify(body);
-    }
-
+if (body !== undefined) {
+  init.body = typeof body === "string"
+    ? body
+    : JSON.stringify(body);
+}
     try {
       const response = await fetch(fullUrl, init);
 

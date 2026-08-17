@@ -43,7 +43,6 @@ export class KeycloakIdentityProvider implements IdentityProvider {
     if (this.cachedToken && now < this.tokenExpiresAt) {
       return this.cachedToken;
     }
-
     const body = new URLSearchParams({
       grant_type: "client_credentials",
       client_id: this.clientId,
@@ -74,7 +73,6 @@ export class KeycloakIdentityProvider implements IdentityProvider {
     const token = await this.getServiceToken();
 
     let response: HttpResponse<void>;
-
     try {
       response = await this.httpClient.postWithResponse<void>(
         `${this.baseUri}/admin/realms/${this.realm}/users`,
@@ -87,7 +85,7 @@ export class KeycloakIdentityProvider implements IdentityProvider {
           ],
         },
         {
-          headers: this.authHeader(token),
+          headers: this.authHeader(token)
         },
       );
     } catch (error) {

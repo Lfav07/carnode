@@ -4,13 +4,22 @@ import { UserService } from './service/UserService.js';
 import { UserController } from './controller/UserController.js';
 import { KeycloakIdentityProvider } from './infrastructure/keycloak/KeycloakIdentityProvider.js';
 import { FetchHttpClient } from '../shared/http/FetchHttpClient.js';
+import { userRoutes } from './routes/UserRoutes.js';
 
 
 export function makeUserModule(db: Db) {
-  const httpClient = new FetchHttpClient()
+  const httpClient = new FetchHttpClient();
   const userRepository = new MongoUserRepository(db);
-  const keycloakIdentityProvider = new KeycloakIdentityProvider(httpClient)
-  const userService    = new UserService(userRepository, keycloakIdentityProvider);
+  const identityProvider = new KeycloakIdentityProvider(httpClient);
+
+  const userService = new UserService(
+    userRepository,
+    identityProvider
+  );
+
   const userController = new UserController(userService);
-  return { userController };
+
+  const router = userRoutes(userController);
+
+  return { router };
 }
