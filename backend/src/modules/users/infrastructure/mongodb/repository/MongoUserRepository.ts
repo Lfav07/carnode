@@ -1,48 +1,49 @@
 import type { User } from "../../../domain/User.js";
 import type { UserRepository } from "../../../domain/UserRepository.js";
 import type { CreateUserInput } from "../../../dto/request/CreateUserInput.js";
-import { Db } from "mongodb";
+import { Collection, Db, ObjectId } from "mongodb";
+import type { UserDocument } from "../UserDocument.js";
+import { UserDocumentMapper } from "../UserDocumentMapper.js";
 
 export class MongoUserRepository implements UserRepository {
-  constructor(private readonly db: Db) {}
-  findById(id: string): Promise<User | null> {
-    throw new Error("Method not implemented.");
+  private readonly collection: Collection<UserDocument>;
+
+  constructor(db: Db) {
+    this.collection = db.collection("users");
   }
-  findByKeycloakId(id: string): Promise<User | null> {
-    throw new Error("Method not implemented.");
-  }
-  findByEmail(email: string): Promise<User | null> {
-    throw new Error("Method not implemented.");
-  }
-  findAll(): Promise<User[]> {
-    // throw new Error("Method not implemented.");
-    const user: User = {
-        id: "123id",
-        keycloakId: "123keycloakid",
-        email: "hey@gmail.com",
-        createdAt: new Date(),
-        updatedAt: new Date()
+
+    async findById(id: string) {
+      const doc = await this.collection.findOne({_id: new ObjectId(id)});
+      return doc ? UserDocumentMapper.toDomain(doc) : null;
     }
-    const users: User[] = [
-        user,
-    ]
-    return Promise.all(users)
+
+  async findByKeycloakId(id: string) {
+    const doc = await this.collection.findOne({ keycloak_id: id });
+    return doc ? UserDocumentMapper.toDomain(doc) : null;
   }
-  create(input: CreateUserInput): Promise<User> {
-        const user: User = {
-        id: "123id",
-        keycloakId: "123keycloakid",
-        email: "hey@gmail.com",
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
-    return Promise.resolve(user);
+
+  async findByEmail(email: string) {
+    const doc = await this.collection.findOne({ email });
+    return doc ? UserDocumentMapper.toDomain(doc) : null;
+  }
+
+  async findAll() {
+    const docs = await this.collection.find().toArray();
+    return docs.map(UserDocumentMapper.toDomain);
+  }
+
+  async create(input: CreateUserInput) {
+    const doc = UserDocumentMapper.toDocumentFromInput(input);
+    const result = await this.collection.insertOne(doc);
+    const created = await this.collection.findOne({ _id: result.insertedId });
+    return UserDocumentMapper.toDomain(created!);
+  }
+
+  async update(user: User): Promise<User> {
     throw new Error("Method not implemented.");
   }
-  update(user: User): Promise<User> {
-    throw new Error("Method not implemented.");
-  }
-  delete(id: string): Promise<boolean> {
+
+  async delete(id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
 }

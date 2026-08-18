@@ -22,7 +22,6 @@ export class UserController {
 
   async searchUser(req: Request<{}, {}, {}, SearchParams>, res: Response) {
     const { email, keycloakId } = req.query;
-
     if (email) {
       const user = await this.userService.getUserByEmail(email);
       return res.json(user);
@@ -30,7 +29,7 @@ export class UserController {
       const user = await this.userService.getUserByKeycloakId(keycloakId);
       return res.json(user);
     }
-    throw new Error("Failed to search user for params " + req.query);
+    return res.status(400).json({ message: "Provide either email or keycloakId" });
   }
 
   async getCurrentUser(req: Request, res: Response) {

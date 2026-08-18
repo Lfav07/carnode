@@ -26,20 +26,20 @@ import {
 
 export function userRoutes(userController: UserController) {
   const router = Router();
-  router.get("/", (req: Request, res: Response) =>
+  router.get("/", async (req: Request, res: Response) =>
     userController.getUsers(req, res),
-  );
-  router.get(
-    "/:id",
-    validateParams(userIdParamsSchema),
-    (req: Request<UserIdParams>, res: Response) =>
-      userController.getUserById(req, res),
   );
   router.get(
     "/search",
     validateQueryParams(searchSchema),
-    (req: Request<{}, {}, {}, SearchParams>, res: Response) =>
+    async (req: Request<{}, {}, {}, SearchParams>, res: Response) =>
       userController.searchUser(req, res),
+  );
+  router.get(
+    "/:id",
+    validateParams(userIdParamsSchema),
+    async (req: Request<UserIdParams>, res: Response) =>
+      userController.getUserById(req, res),
   );
 
   // TODO: ADD /ME ENDPOINTS WHEN KEYCLOAK READY
@@ -47,7 +47,7 @@ export function userRoutes(userController: UserController) {
   router.post(
     "/",
     validateBody(createUserSchema),
-    (req: Request<{}, {}, CreateUserRequest>, res: Response) =>
+    async (req: Request<{}, {}, CreateUserRequest>, res: Response) =>
       userController.registerUser(req, res),
   );
 
@@ -55,20 +55,20 @@ export function userRoutes(userController: UserController) {
     "/:id/email",
     validateParams(userIdParamsSchema),
     validateBody(updateUserEmailRequestSchema),
-    (req: Request<UserIdParams, {}, UpdateUserEmailRequest>, res: Response) =>
+    async (req: Request<UserIdParams, {}, UpdateUserEmailRequest>, res: Response) =>
       userController.updateEmail(req, res),
   );
   router.patch(
     "/:id/password",
     validateParams(userIdParamsSchema),
     validateBody(changePasswordSchema),
-    (req: Request<UserIdParams, {}, ChangePasswordRequest>, res: Response) =>
+    async (req: Request<UserIdParams, {}, ChangePasswordRequest>, res: Response) =>
       userController.changePassword(req, res),
   );
   router.delete(
     "/:id",
     validateParams(userIdParamsSchema),
-    (req: Request<UserIdParams>, res: Response) =>
+    async (req: Request<UserIdParams>, res: Response) =>
       userController.deleteUser(req, res),
   );
   return router;

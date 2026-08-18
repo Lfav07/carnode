@@ -1,14 +1,13 @@
 import { App } from "./app.js";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient } from "mongodb";;
+import { MongoConnection } from "./modules/shared/mongodb/MongoConnection.js";
 process.loadEnvFile('./.env');
-const mongoServer = await MongoMemoryServer.create();
 
-const client = new MongoClient(mongoServer.getUri());
+const mongo = new MongoConnection(
+  process.env["MONGODB_URI"]!,
+  process.env["MONGODB_DATABASE"]!
+);
 
-await client.connect();
-
-const db = client.db("car-rental");
+const db = await mongo.connect();
 
 const app = new App(db);
 

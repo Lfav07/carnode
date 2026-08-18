@@ -71,7 +71,6 @@ export class UserService {
     };
     const keycloakId =
       await this.identityProvider.registerUser(keycloakRequest);
-      console.log(keycloakId)
     const input: CreateUserInput = {
       keycloakId: keycloakId,
       email: request.email,
