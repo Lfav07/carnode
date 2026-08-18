@@ -21,28 +21,43 @@ import {
   changePasswordSchema,
   type ChangePasswordRequest,
 } from "../schema/ChangePasswordSchema.js";
+import { authenticate } from "../middleware/Authenticate.js";
+import { authorize } from "../middleware/Authorize.js";
+import { ROLES } from "../domain/Roles.js";
 
 //TODO: Implement authentication middleware
 
 export function userRoutes(userController: UserController) {
   const router = Router();
-  router.get("/", async (req: Request, res: Response) =>
-    userController.getUsers(req, res),
+  router.get(
+    "/",
+    authenticate(),
+    authorize(ROLES.ADMIN),
+    async (req: Request, res: Response) => userController.getUsers(req, res),
   );
   router.get(
     "/search",
+    authenticate(),
+    authorize(ROLES.ADMIN),
     validateQueryParams(searchSchema),
     async (req: Request<{}, {}, {}, SearchParams>, res: Response) =>
       userController.searchUser(req, res),
   );
   router.get(
+    "/me",
+    authenticate(),
+    authorize(ROLES.USER),
+    async (req: Request, res: Response) =>
+      userController.getCurrentUser(req, res),
+  );
+  router.get(
     "/:id",
+    authenticate(),
+    authorize(ROLES.ADMIN),
     validateParams(userIdParamsSchema),
     async (req: Request<UserIdParams>, res: Response) =>
       userController.getUserById(req, res),
   );
-
-  // TODO: ADD /ME ENDPOINTS WHEN KEYCLOAK READY
 
   router.post(
     "/",
@@ -53,20 +68,30 @@ export function userRoutes(userController: UserController) {
 
   router.patch(
     "/:id/email",
+    authenticate(),
+    authorize(ROLES.ADMIN),
     validateParams(userIdParamsSchema),
     validateBody(updateUserEmailRequestSchema),
-    async (req: Request<UserIdParams, {}, UpdateUserEmailRequest>, res: Response) =>
-      userController.updateEmail(req, res),
+    async (
+      req: Request<UserIdParams, {}, UpdateUserEmailRequest>,
+      res: Response,
+    ) => userController.updateEmail(req, res),
   );
   router.patch(
     "/:id/password",
+    authenticate(),
+    authorize(ROLES.ADMIN),
     validateParams(userIdParamsSchema),
     validateBody(changePasswordSchema),
-    async (req: Request<UserIdParams, {}, ChangePasswordRequest>, res: Response) =>
-      userController.changePassword(req, res),
+    async (
+      req: Request<UserIdParams, {}, ChangePasswordRequest>,
+      res: Response,
+    ) => userController.changePassword(req, res),
   );
   router.delete(
     "/:id",
+    authenticate(),
+    authorize(ROLES.ADMIN),
     validateParams(userIdParamsSchema),
     async (req: Request<UserIdParams>, res: Response) =>
       userController.deleteUser(req, res),

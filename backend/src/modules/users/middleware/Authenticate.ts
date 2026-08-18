@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt, { type JwtHeader, type SigningKeyCallback } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
-
 export interface AuthenticatedUser {
   sub: string;
   roles: string[];

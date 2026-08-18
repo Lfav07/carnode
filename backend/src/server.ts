@@ -1,6 +1,5 @@
 import { App } from "./app.js";
 import { MongoConnection } from "./modules/shared/mongodb/MongoConnection.js";
-process.loadEnvFile('./.env');
 
 const mongo = new MongoConnection(
   process.env["MONGODB_URI"]!,
