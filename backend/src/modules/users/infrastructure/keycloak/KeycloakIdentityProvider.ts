@@ -1,8 +1,11 @@
-import type { HttpClient, HttpResponse } from "../../../shared/http/HttpClient.js";
+import type {
+  HttpClient,
+  HttpResponse,
+} from "../../../shared/http/HttpClient.js";
 import { HttpError } from "../../../shared/http/HttpError.js";
 import type { IdentityProvider } from "../../domain/IdentityProvider.js";
 import type { IdentityRegisterRequest } from "../../dto/request/IdentityRegisterRequest.js";
-import { ConflictError } from "../../domain/ConflictError.js";
+import { UserConflictError } from "../../domain/errors/UserConflictError.js";
 
 interface KeycloakTokenResponse {
   access_token: string;
@@ -85,12 +88,12 @@ export class KeycloakIdentityProvider implements IdentityProvider {
           ],
         },
         {
-          headers: this.authHeader(token)
+          headers: this.authHeader(token),
         },
       );
     } catch (error) {
       if (error instanceof HttpError && error.status === 409) {
-        throw new ConflictError("User already exists");
+        throw new UserConflictError("User already exists");
       }
       throw error;
     }
@@ -124,31 +127,42 @@ export class KeycloakIdentityProvider implements IdentityProvider {
   async changePassword(id: string, password: string): Promise<void> {
     const token = await this.getServiceToken();
 
-    await this.httpClient.put(
-      `${this.baseUri}/admin/realms/${this.realm}/users/${id}/reset-password`,
-      {
-        type: "password",
-        value: password,
-        temporary: false,
-      },
-      {
-        headers: this.authHeader(token),
-      },
-    );
+    try {
+      await this.httpClient.put(
+        `${this.baseUri}/admin/realms/${this.realm}/users/${id}/reset-password`,
+        {
+          type: "password",
+          value: password,
+          temporary: false,
+        },
+        {
+          headers: this.authHeader(token),
+        },
+      );
+    } catch (err) {
+      if (err instanceof HttpError && err.status === 409) {
+        throw new UserConflictError("A user with this email already exists");
+      }
+    }
   }
 
   async changeEmail(id: string, email: string): Promise<void> {
     const token = await this.getServiceToken();
-
-    await this.httpClient.put(
-      `${this.baseUri}/admin/realms/${this.realm}/users/${id}`,
-      {
-        email,
-        username: email,
-      },
-      {
-        headers: this.authHeader(token),
-      },
-    );
+    try {
+      await this.httpClient.put(
+        `${this.baseUri}/admin/realms/${this.realm}/users/${id}`,
+        {
+          email,
+          username: email,
+        },
+        {
+          headers: this.authHeader(token),
+        },
+      );
+    } catch (err) {
+      if (err instanceof HttpError && err.status === 409) {
+        throw new UserConflictError("A user with this email already exists");
+      }
+    }
   }
 }

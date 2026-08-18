@@ -2,7 +2,7 @@ import type { UserRepository } from "../domain/UserRepository.js";
 import type { CreateUserInput } from "../dto/request/CreateUserInput.js";
 import type { IdentityRegisterRequest } from "../dto/request/IdentityRegisterRequest.js";
 import type { UserResponseDto } from "../dto/response/UserResponseDto.js";
-import { UserNotFoundError } from "./errors/UserNotFoundError.js";
+import { UserNotFoundError } from "../domain/errors/UserNotFoundError.js";
 import { UserResponseMapper } from "../dto/response/UserResponseMapper.js";
 import type { CurrentUserResponseDto } from "../dto/response/CurrentUserResponseDto.js";
 import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
