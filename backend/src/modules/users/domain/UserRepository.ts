@@ -1,4 +1,6 @@
 import type { CreateUserInput } from "../dto/request/CreateUserInput.js";
+import type { PaginationInput } from "../dto/request/PaginationInput.js";
+import type { PaginatedResult } from "./PaginatedResult.js";
 import type { User } from "./User.js";
 
 export interface UserRepository {
@@ -8,7 +10,7 @@ export interface UserRepository {
 
   findByEmail(email: string): Promise<User | null>;
 
-  findAll(): Promise<User[]>
+  findPaginated(input: PaginationInput): Promise<PaginatedResult<User>>;
 
   create(input: CreateUserInput): Promise<User>;
 

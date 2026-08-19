@@ -9,6 +9,9 @@ import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSchema.js";
 import type { ChangePasswordRequest } from "../schema/ChangePasswordSchema.js";
 import type { IdentityProvider } from "../domain/IdentityProvider.js";
+import type { PaginationInput } from "../dto/request/PaginationInput.js";
+import type { PaginatedResponse } from "../dto/response/PaginatedResponse.js";
+import { PaginationMetaMapper } from "../dto/response/PaginationMetaMapper.js";
 
 export class UserService {
   constructor(
@@ -34,10 +37,18 @@ export class UserService {
     return user;
   }
 
-  async getUsers(): Promise<UserResponseDto[]> {
-    return (await this.userRepository.findAll()).map((u) =>
-      UserResponseMapper.toResponse(u),
-    );
+  async getUsers(
+    input: PaginationInput,
+  ): Promise<PaginatedResponse<UserResponseDto>> {
+    const result = await this.userRepository.findPaginated(input);
+    return {
+      data: result.data.map((u) => UserResponseMapper.toResponse(u)),
+      meta: PaginationMetaMapper.create({
+        currentPage: input.page,
+        totalCount: result.totalCount,
+        limit: input.limit,
+      }),
+    };
   }
 
   async getUserById(id: string): Promise<UserResponseDto> {

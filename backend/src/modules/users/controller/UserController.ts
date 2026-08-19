@@ -5,15 +5,23 @@ import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSch
 import type { UserIdParams } from "../schema/UserIdParamsSchema.js";
 import type { UserService } from "../service/UserService.js";
 import type { Response, Request } from "express";
+import type { PaginationQuery } from "../schema/PaginationSchema.js";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  //TODO: Implement Pagination
-  async getUsers(_req: Request, res: Response) {
-    const users = await this.userService.getUsers();
+  async getUsers(req: Request, res: Response) {
+    const { page, limit, sortBy, sortOrder } =
+      req.validatedQuery as PaginationQuery;
+
+    const users = await this.userService.getUsers({
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+    });
+
     return res.json(users);
   }
-
   async getUserById(req: Request<UserIdParams>, res: Response) {
     const { id } = req.params;
     const user = await this.userService.getUserById(id);
@@ -29,7 +37,9 @@ export class UserController {
       const user = await this.userService.getUserByKeycloakId(keycloakId);
       return res.json(user);
     }
-    return res.status(400).json({ message: "Provide either email or keycloakId" });
+    return res
+      .status(400)
+      .json({ message: "Provide either email or keycloakId" });
   }
 
   async getCurrentUser(req: Request, res: Response) {

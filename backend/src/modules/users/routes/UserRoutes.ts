@@ -24,6 +24,7 @@ import {
 import { authenticate } from "../middleware/Authenticate.js";
 import { authorize } from "../middleware/Authorize.js";
 import { ROLES } from "../domain/Roles.js";
+import { paginationSchema } from "../schema/PaginationSchema.js";
 
 //TODO: Implement authentication middleware
 
@@ -33,6 +34,7 @@ export function userRoutes(userController: UserController) {
     "/",
     authenticate(),
     authorize(ROLES.ADMIN),
+    validateQueryParams(paginationSchema),
     async (req: Request, res: Response) => userController.getUsers(req, res),
   );
   router.get(
