@@ -1,6 +1,6 @@
 export interface PaginationInput {
   page: number;
   limit: number;
-  sortBy: "createdAt" | "email";
+  sortBy: string;
   sortOrder: "asc" | "desc";
 }

@@ -1,8 +1,8 @@
 import type { User } from "../../../domain/User.js";
 import type { UserRepository } from "../../../domain/UserRepository.js";
 import type { CreateUserInput } from "../../../dto/request/CreateUserInput.js";
-import type { PaginationInput } from "../../../dto/request/PaginationInput.js";
-import type { PaginatedResult } from "../../../domain/PaginatedResult.js";
+import type { PaginationInput } from "../../../../shared/pagination/PaginationInput.js";
+import type { PaginatedResult } from "../../../../shared/pagination/PaginatedResult.js";
 import { Collection, Db, MongoServerError, ObjectId } from "mongodb";
 import type { UserDocument } from "../UserDocument.js";
 import { UserDocumentMapper } from "../UserDocumentMapper.js";

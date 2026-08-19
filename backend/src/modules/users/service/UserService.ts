@@ -9,9 +9,9 @@ import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import type { UpdateUserEmailRequest } from "../schema/UpdateUserEmailRequestSchema.js";
 import type { ChangePasswordRequest } from "../schema/ChangePasswordSchema.js";
 import type { IdentityProvider } from "../domain/IdentityProvider.js";
-import type { PaginationInput } from "../dto/request/PaginationInput.js";
-import type { PaginatedResponse } from "../dto/response/PaginatedResponse.js";
-import { PaginationMetaMapper } from "../dto/response/PaginationMetaMapper.js";
+import type { PaginationInput } from "../../shared/pagination/PaginationInput.js";
+import type { PaginatedResponse } from "../../shared/pagination/PaginatedResponse.js";
+import { PaginationMetaMapper } from "../../shared/pagination/PaginationMetaMapper.js";
 
 export class UserService {
   constructor(

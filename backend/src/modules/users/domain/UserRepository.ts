@@ -1,6 +1,6 @@
 import type { CreateUserInput } from "../dto/request/CreateUserInput.js";
-import type { PaginationInput } from "../dto/request/PaginationInput.js";
-import type { PaginatedResult } from "./PaginatedResult.js";
+import type { PaginationInput } from "../../shared/pagination/PaginationInput.js";
+import type { PaginatedResult } from "../../shared/pagination/PaginatedResult.js";
 import type { User } from "./User.js";
 
 export interface UserRepository {
