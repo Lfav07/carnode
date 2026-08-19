@@ -21,8 +21,8 @@ import {
   changePasswordSchema,
   type ChangePasswordRequest,
 } from "../schema/ChangePasswordSchema.js";
-import { authenticate } from "../middleware/Authenticate.js";
-import { authorize } from "../middleware/Authorize.js";
+import { authenticate } from "../../shared/middleware/Authenticate.js";
+import { authorize } from "../../shared/middleware/Authorize.js";
 import { ROLES } from "../domain/Roles.js";
 import { paginationSchema } from "../schema/PaginationSchema.js";
 
