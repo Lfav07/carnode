@@ -8,7 +8,7 @@ export interface Car {
   category: string;
   plate: string;
   status: CarStatus;
-  dailyRate: number;
+  dailyRate: string;
   createdAt: Date;
   updatedAt: Date;
 }

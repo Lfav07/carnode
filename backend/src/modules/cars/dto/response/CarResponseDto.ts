@@ -6,7 +6,7 @@ export interface CarResponseDto {
   category: string;
   plate: string;
   status: string;
-  dailyRate: number;
+  dailyRate: string;
   createdAt: string;
   updatedAt: string;
 }

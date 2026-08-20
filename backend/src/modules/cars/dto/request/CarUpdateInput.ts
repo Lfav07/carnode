@@ -4,5 +4,5 @@ export interface CarUpdateInput {
   year?: number | undefined;
   category?: string | undefined;
   plate?: string | undefined;
-  dailyRate?: number | undefined;
+  dailyRate?: string | undefined;
 }

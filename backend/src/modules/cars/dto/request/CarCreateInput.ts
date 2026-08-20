@@ -4,5 +4,5 @@ export interface CarCreateInput {
   year: number;
   category: string;
   plate: string;
-  dailyRate: number;
+  dailyRate: string;
 }

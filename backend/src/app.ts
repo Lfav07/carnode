@@ -1,6 +1,7 @@
 import express from "express";
 import type { Db } from "mongodb";
 import { makeUserModule } from "./modules/users/container.js";
+import { makeCarModule } from "./modules/cars/container.js";
 import { errorHandler } from "./modules/shared/http/ErrorHandler.js";
 export class App {
   public readonly app = express();
@@ -18,6 +19,9 @@ export class App {
   private configureRoutes() {
     const { router } = makeUserModule(this.db);
     this.app.use("/api/v1/users", router);
+
+    const { router: carRouter } = makeCarModule(this.db);
+    this.app.use("/api/v1/cars", carRouter);
   }
   private configureErrorHandler() {
     this.app.use(errorHandler);

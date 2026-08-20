@@ -6,12 +6,15 @@ import type { CarResponseDto } from "../dto/response/CarResponseDto.js";
 import type { PaginatedResponse } from "../../shared/pagination/PaginatedResponse.js";
 import { CarNotFoundError } from "../domain/errors/CarNotFoundError.js";
 import { CarConflictError } from "../domain/errors/CarConflictError.js";
+import { CarInvalidTransitionError } from "../domain/errors/CarInvalidTransitionError.js";
+import { CarRentedError } from "../domain/errors/CarRentedError.js";
 import { CarResponseMapper } from "../dto/response/CarResponseMapper.js";
 import { PaginationMetaMapper } from "../../shared/pagination/PaginationMetaMapper.js";
 import {
   VALID_STATUS_TRANSITIONS,
   type CarStatus,
 } from "../domain/CarStatus.js";
+import type { UserCarResponseDto } from "../dto/response/UserCarResponseDto.js";
 
 export class CarService {
   constructor(private readonly carRepository: CarRepository) {}
@@ -42,6 +45,21 @@ export class CarService {
     return CarResponseMapper.toResponse(car);
   }
 
+   async userGetCars(
+    queryParams: CarQueryInput,
+  ): Promise<PaginatedResponse<UserCarResponseDto>> {
+    const result = await this.carRepository.findPaginated(queryParams);
+
+    return {
+      data: result.data.map((car) => CarResponseMapper.toUserResponse(car)),
+      meta: PaginationMetaMapper.create({
+        currentPage: queryParams.page,
+        totalCount: result.totalCount,
+        limit: queryParams.limit,
+      }),
+    };
+  }
+
   async getCars(
     queryParams: CarQueryInput,
   ): Promise<PaginatedResponse<CarResponseDto>> {
@@ -65,7 +83,7 @@ export class CarService {
 
   async registerCar(input: CarCreateInput): Promise<CarResponseDto> {
     const existingCar = await this.carRepository.findByPlate(input.plate);
-
+    console.log("Here 1")
     if (existingCar) {
       throw new CarConflictError(
         `Car with plate '${input.plate}' already exists`,
@@ -73,7 +91,7 @@ export class CarService {
     }
 
     const car = await this.carRepository.create(input);
-
+    console.log("Here 2")
     return CarResponseMapper.toResponse(car);
   }
 
@@ -104,7 +122,7 @@ export class CarService {
     const allowedTransitions = VALID_STATUS_TRANSITIONS[existingCar.status];
 
     if (!allowedTransitions.includes(status)) {
-      throw new Error(
+      throw new CarInvalidTransitionError(
         `Cannot transition car from '${existingCar.status}' to '${status}'`,
       );
     }
@@ -118,8 +136,8 @@ export class CarService {
 
     const allowedTransitions = VALID_STATUS_TRANSITIONS[car.status];
     if (!allowedTransitions.includes("DELETED")) {
-      throw new Error(
-        `Cannot transition car from '${car.status}' to '${"DELETED"}'`,
+      throw new CarRentedError(
+        `Cannot transition car from '${car.status}' to 'DELETED'`,
       );
     }
     await this.carRepository.updateStatus(id, "DELETED");

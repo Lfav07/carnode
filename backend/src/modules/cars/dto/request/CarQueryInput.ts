@@ -8,4 +8,7 @@ export interface CarQueryInput {
   status?: string;
   minYear?: number;
   maxYear?: number;
+  model?: string;
+  year?: number;
+  dailyRate?: string;
 }

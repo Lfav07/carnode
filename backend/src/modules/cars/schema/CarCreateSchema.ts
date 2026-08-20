@@ -1,48 +1,6 @@
 import { z } from "zod";
-
-export const CAR_BRANDS = [
-  "TOYOTA",
-  "HONDA",
-  "HYUNDAI",
-  "CHEVROLET",
-  "VOLKSWAGEN",
-  "FORD",
-  "NISSAN",
-  "RENAULT",
-  "FIAT",
-  "JEEP",
-  "PEUGEOT",
-  "CITROEN",
-  "MITSUBISHI",
-  "SUBARU",
-  "KIA",
-  "SUZUKI",
-  "MAZDA",
-  "BMW",
-  "MERCEDES_BENZ",
-  "AUDI",
-  "VOLVO",
-  "LEXUS",
-  "LAND_ROVER",
-  "PORSCHE",
-  "TESLA",
-] as const;
-
-export const CAR_CATEGORIES = [
-  "ECONOMY",
-  "COMPACT",
-  "SUV",
-  "LUXURY",
-  "PICKUP",
-  "VAN",
-] as const;
-
-export const CAR_STATUSES = [
-  "AVAILABLE",
-  "RENTED",
-  "MAINTENANCE",
-  "DELETED",
-] as const;
+import { CAR_BRANDS } from "../domain/CarBrands.js";
+import { CAR_CATEGORIES } from "../domain/CarCategories.js";
 
 export const carCreateSchema = z.object({
   brand: z.enum(CAR_BRANDS),
@@ -58,7 +16,13 @@ export const carCreateSchema = z.object({
     .min(7)
     .max(8)
     .regex(/^[A-Z0-9]+$/),
-  dailyRate: z.number().positive().multipleOf(0.01),
+  dailyRate: z
+    .string()
+    .regex(
+      /^\d+(\.\d{1,2})?$/,
+      "must be a decimal with up to 2 decimal places",
+    )
+    .refine((value) => Number(value) > 0, { message: "must be positive" }),
 });
 
 export type CarCreateRequest = z.infer<typeof carCreateSchema>;
