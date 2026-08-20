@@ -8,8 +8,6 @@ import type { CarCreateRequest } from "../schema/CarCreateSchema.js";
 import type { CarUpdateRequest } from "../schema/CarUpdateSchema.js";
 import type { CarStatusUpdateRequest } from "../schema/CarStatusUpdateSchema.js";
 import type { CarQueryInput } from "../dto/request/CarQueryInput.js";
-import type { ParamsDictionary } from "express-serve-static-core";
-import type { ParsedQs } from "qs";
 
 export class CarController {
   constructor(private readonly carService: CarService) {}

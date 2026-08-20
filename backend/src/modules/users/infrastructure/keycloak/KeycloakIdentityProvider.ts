@@ -127,23 +127,17 @@ export class KeycloakIdentityProvider implements IdentityProvider {
   async changePassword(id: string, password: string): Promise<void> {
     const token = await this.getServiceToken();
 
-    try {
-      await this.httpClient.put(
-        `${this.baseUri}/admin/realms/${this.realm}/users/${id}/reset-password`,
-        {
-          type: "password",
-          value: password,
-          temporary: false,
-        },
-        {
-          headers: this.authHeader(token),
-        },
-      );
-    } catch (err) {
-      if (err instanceof HttpError && err.status === 409) {
-        throw new UserConflictError("A user with this email already exists");
-      }
-    }
+    await this.httpClient.put(
+      `${this.baseUri}/admin/realms/${this.realm}/users/${id}/reset-password`,
+      {
+        type: "password",
+        value: password,
+        temporary: false,
+      },
+      {
+        headers: this.authHeader(token),
+      },
+    );
   }
 
   async changeEmail(id: string, email: string): Promise<void> {
@@ -163,6 +157,7 @@ export class KeycloakIdentityProvider implements IdentityProvider {
       if (err instanceof HttpError && err.status === 409) {
         throw new UserConflictError("A user with this email already exists");
       }
+      throw err;
     }
   }
 }

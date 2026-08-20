@@ -20,7 +20,7 @@
     // Style Options
     "noImplicitReturns": true,
      "noImplicitOverride": true,
-     "noUnusedLocals": false,
+     "noUnusedLocals": true,
      "noUnusedParameters": true,
      "noFallthroughCasesInSwitch": true,
      "noPropertyAccessFromIndexSignature": false,

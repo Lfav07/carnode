@@ -44,10 +44,9 @@ export class UserController {
 
   async getCurrentUser(req: Request, res: Response) {
     if (!req.user?.sub) {
-      res.statusCode = 401;
-      return res;
+      return res.status(401).json({ message: "Unauthenticated" }).send();
     }
-    const user = await this.userService.getCurrentUser(req.user?.sub);
+    const user = await this.userService.getCurrentUser(req.user.sub);
     return res.json(user);
   }
 

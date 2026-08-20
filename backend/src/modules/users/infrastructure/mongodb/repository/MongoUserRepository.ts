@@ -68,8 +68,15 @@ export class MongoUserRepository implements UserRepository {
 
   async create(input: CreateUserInput): Promise<User> {
     const doc = UserDocumentMapper.toDocumentFromInput(input);
-    await this.collection.insertOne(doc);
-    return UserDocumentMapper.toDomain(doc);
+    try {
+      await this.collection.insertOne(doc);
+      return UserDocumentMapper.toDomain(doc);
+    } catch (err: unknown) {
+      if (this.isMongoServerError(err) && err.code === 11000) {
+        throw new UserConflictError("User email already exists");
+      }
+      throw err;
+    }
   }
 
   async update(user: User): Promise<User> {
