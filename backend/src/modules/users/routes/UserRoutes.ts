@@ -23,10 +23,9 @@ import {
 } from "../schema/ChangePasswordSchema.js";
 import { authenticate } from "../../shared/middleware/Authenticate.js";
 import { authorize } from "../../shared/middleware/Authorize.js";
-import { ROLES } from "../domain/Roles.js";
+import { ROLES } from "../../shared/middleware/Roles.js";
 import { paginationSchema } from "../schema/PaginationSchema.js";
 
-//TODO: Implement authentication middleware
 
 export function userRoutes(userController: UserController) {
   const router = Router();

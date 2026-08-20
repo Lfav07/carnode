@@ -4,8 +4,8 @@ export class MongoConnection {
   private readonly client: MongoClient;
 
   constructor(
-    private readonly uri: string,
-    private readonly databaseName: string
+    uri: string,
+    private readonly databaseName: string,
   ) {
     this.client = new MongoClient(uri);
   }
