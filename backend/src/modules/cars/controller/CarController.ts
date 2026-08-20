@@ -84,8 +84,6 @@ export class CarController {
     res: Response,
   ): Promise<Response> {
     const car = await this.carService.registerCar(req.body);
-    console.log("Here 6");
-    console.log(car);
     return res.status(201).set("Location", `/api/v1/cars/${car.id}`).send();
   }
 

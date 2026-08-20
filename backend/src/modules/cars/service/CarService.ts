@@ -83,7 +83,6 @@ export class CarService {
 
   async registerCar(input: CarCreateInput): Promise<CarResponseDto> {
     const existingCar = await this.carRepository.findByPlate(input.plate);
-    console.log("Here 1")
     if (existingCar) {
       throw new CarConflictError(
         `Car with plate '${input.plate}' already exists`,
@@ -91,7 +90,6 @@ export class CarService {
     }
 
     const car = await this.carRepository.create(input);
-    console.log("Here 2")
     return CarResponseMapper.toResponse(car);
   }
 
