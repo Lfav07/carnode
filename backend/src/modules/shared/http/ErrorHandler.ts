@@ -5,6 +5,7 @@ import { CarNotFoundError } from "../../cars/domain/errors/CarNotFoundError.js";
 import { CarConflictError } from "../../cars/domain/errors/CarConflictError.js";
 import { CarInvalidTransitionError } from "../../cars/domain/errors/CarInvalidTransitionError.js";
 import { CarRentedError } from "../../cars/domain/errors/CarRentedError.js";
+import { StoreNotFoundError } from "../../stores/domain/errors/StoreNotFoundError.js";
 
 export const errorHandler: ErrorRequestHandler = (
   err,
@@ -21,6 +22,10 @@ export const errorHandler: ErrorRequestHandler = (
     return;
   }
   if (err instanceof CarNotFoundError) {
+    res.status(404).json({ message: err.message });
+    return;
+  }
+  if (err instanceof StoreNotFoundError) {
     res.status(404).json({ message: err.message });
     return;
   }
