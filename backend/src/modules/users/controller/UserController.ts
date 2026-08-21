@@ -6,13 +6,13 @@ import type { UserIdParams } from "../schema/UserIdParamsSchema.js";
 import type { UserService } from "../service/UserService.js";
 import type { Response, Request } from "express";
 import type { PaginationQuery } from "../schema/PaginationSchema.js";
+import { getValidatedQuery } from "../../shared/index.js";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   async getUsers(req: Request, res: Response) {
     const { page, limit, sortBy, sortOrder } =
-      req.validatedQuery as PaginationQuery;
-
+      getValidatedQuery<PaginationQuery>(req);
     const users = await this.userService.getUsers({
       page,
       limit,

@@ -4,15 +4,20 @@ import {
   userIdParamsSchema,
   type UserIdParams,
 } from "../schema/UserIdParamsSchema.js";
-import { validateParams } from "../middleware/ValidateParams.js";
+import {
+  validateParams,
+  validateBody,
+  validateQueryParams,
+  authenticate,
+  authorize,
+  ROLES,
+} from "../../shared/index.js";
 import { createUserSchema } from "../schema/CreateUserRequestSchema.js";
-import { validateBody } from "../middleware/ValidateBody.js";
 import type { CreateUserRequest } from "../schema/CreateUserRequestSchema.js";
 import {
   searchSchema,
   type SearchParams,
 } from "../schema/SearchUserParamsSchema.js";
-import { validateQueryParams } from "../middleware/ValidateQueryParams.js";
 import {
   updateUserEmailRequestSchema,
   type UpdateUserEmailRequest,
@@ -21,11 +26,7 @@ import {
   changePasswordSchema,
   type ChangePasswordRequest,
 } from "../schema/ChangePasswordSchema.js";
-import { authenticate } from "../../shared/middleware/Authenticate.js";
-import { authorize } from "../../shared/middleware/Authorize.js";
-import { ROLES } from "../../shared/middleware/Roles.js";
 import { paginationSchema } from "../schema/PaginationSchema.js";
-
 
 export function userRoutes(userController: UserController) {
   const router = Router();

@@ -1,13 +1,12 @@
 import type { Request, Response } from "express";
 import type { CarService } from "../service/CarService.js";
 import type { CarIdParams } from "../schema/CarIdParamsSchema.js";
-import type { CarPlateParams } from "../schema/CarPlateParamsSchema.js";
-import type { CarPaginationQuery } from "../schema/CarPaginationSchema.js";
-import type { CarSearchQueryParams } from "../schema/CarSearchQuerySchema.js";
 import type { CarCreateRequest } from "../schema/CarCreateSchema.js";
 import type { CarUpdateRequest } from "../schema/CarUpdateSchema.js";
 import type { CarStatusUpdateRequest } from "../schema/CarStatusUpdateSchema.js";
-import type { CarQueryInput } from "../dto/request/CarQueryInput.js";
+import type { CarQueryParams } from "../schema/CarQuerySchema.js";
+import { getValidatedQuery } from "../../shared/index.js";
+import { ROLES } from "../../shared/middleware/Roles.js";
 
 export class CarController {
   constructor(private readonly carService: CarService) {}
@@ -21,62 +20,31 @@ export class CarController {
     return res.json(car);
   }
 
-  async userListCars(req: Request, res: Response): Promise<Response> {
-    const { page, limit } = req.validatedQuery as CarPaginationQuery;
-
-    const queryInput: CarQueryInput = {
-      page,
-      limit,
-      sortBy: "createdAt",
-      sortOrder: "desc",
-    };
-
-    const cars = await this.carService.userGetCars(queryInput);
-    return res.json(cars);
-  }
   async listCars(req: Request, res: Response): Promise<Response> {
-    const { page, limit } = req.validatedQuery as CarPaginationQuery;
+    const query = getValidatedQuery<CarQueryParams>(req);
+    const isAdmin = req.user?.roles.includes(ROLES.ADMIN) ?? false;
 
-    const queryInput: CarQueryInput = {
-      page,
-      limit,
-      sortBy: "createdAt",
-      sortOrder: "desc",
-    };
-
-    const cars = await this.carService.getCars(queryInput);
-    return res.json(cars);
-  }
-
-  async searchCars(req: Request, res: Response): Promise<Response> {
-    const query = req.validatedQuery as CarSearchQueryParams;
-
-    const queryInput: CarQueryInput = {
+    const input = {
       page: query.page,
       limit: query.limit,
-      sortBy: "createdAt",
-      sortOrder: "desc",
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder,
       ...(query.brand !== undefined ? { brand: query.brand } : {}),
       ...(query.category !== undefined ? { category: query.category } : {}),
       ...(query.status !== undefined ? { status: query.status } : {}),
       ...(query.model !== undefined ? { model: query.model } : {}),
       ...(query.year !== undefined ? { year: query.year } : {}),
-      ...(query.daily_rate !== undefined
-        ? { dailyRate: query.daily_rate }
-        : {}),
+      ...(query.minYear !== undefined ? { minYear: query.minYear } : {}),
+      ...(query.maxYear !== undefined ? { maxYear: query.maxYear } : {}),
+      ...(query.dailyRate !== undefined ? { dailyRate: query.dailyRate } : {}),
+      ...(query.plate !== undefined ? { plate: query.plate } : {}),
     };
 
-    const cars = await this.carService.getCars(queryInput);
-    return res.json(cars);
-  }
+    const cars = isAdmin
+      ? await this.carService.getCars(input)
+      : await this.carService.userGetCars(input);
 
-  async getCarByPlate(
-    req: Request<CarPlateParams>,
-    res: Response,
-  ): Promise<Response> {
-    const { plate } = req.params;
-    const car = await this.carService.getCarByPlate(plate);
-    return res.json(car);
+    return res.json(cars);
   }
 
   async registerCar(
@@ -84,7 +52,10 @@ export class CarController {
     res: Response,
   ): Promise<Response> {
     const car = await this.carService.registerCar(req.body);
-    return res.status(201).set("Location", `/api/v1/cars/${car.id}`).send();
+    return res
+      .status(201)
+      .set("Location", `/api/v1/cars/${car.id}`)
+      .json(car);
   }
 
   async updateCar(

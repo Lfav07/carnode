@@ -67,6 +67,9 @@ export class MongoCarRepository implements CarRepository {
     if (input.year !== undefined) {
       filter.year = input.year;
     }
+    if (input.plate !== undefined) {
+      filter.plate = input.plate;
+    }
     if (input.dailyRate !== undefined) {
       filter.daily_rate = Decimal128.fromString(input.dailyRate);
     }
@@ -196,10 +199,5 @@ export class MongoCarRepository implements CarRepository {
     }
 
     return CarDocumentMapper.toDomain(updated);
-  }
-
-  async delete(id: string): Promise<boolean> {
-    const result = await this.collection.deleteOne({ _id: new ObjectId(id) });
-    return result.deletedCount === 1;
   }
 }

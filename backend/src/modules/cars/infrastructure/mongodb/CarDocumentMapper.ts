@@ -1,6 +1,5 @@
-import { Decimal128, ObjectId } from "mongodb";
+import { Decimal128 } from "mongodb";
 import type { Car } from "../../domain/Car.js";
-import type { CarStatus } from "../../domain/CarStatus.js";
 import type { CarCreateInput } from "../../dto/request/CarCreateInput.js";
 import type { CarDocument } from "./CarDocument.js";
 
@@ -13,25 +12,10 @@ export class CarDocumentMapper {
       year: doc.year,
       category: doc.category,
       plate: doc.plate,
-      status: doc.status as CarStatus,
+      status: doc.status,
       dailyRate: doc.daily_rate.toString(),
       createdAt: doc.created_at,
       updatedAt: doc.updated_at,
-    };
-  }
-
-  static toDocument(car: Car): CarDocument {
-    return {
-      _id: new ObjectId(car.id),
-      brand: car.brand,
-      model: car.model,
-      year: car.year,
-      category: car.category,
-      plate: car.plate,
-      status: car.status,
-      daily_rate: Decimal128.fromString(car.dailyRate),
-      created_at: car.createdAt,
-      updated_at: car.updatedAt,
     };
   }
 

@@ -1,6 +1,10 @@
 import type { ErrorRequestHandler } from "express";
 import { UserNotFoundError } from "../../users/domain/errors/UserNotFoundError.js";
 import { UserConflictError } from "../../users/domain/errors/UserConflictError.js";
+import { CarNotFoundError } from "../../cars/domain/errors/CarNotFoundError.js";
+import { CarConflictError } from "../../cars/domain/errors/CarConflictError.js";
+import { CarInvalidTransitionError } from "../../cars/domain/errors/CarInvalidTransitionError.js";
+import { CarRentedError } from "../../cars/domain/errors/CarRentedError.js";
 
 export const errorHandler: ErrorRequestHandler = (
   err,
@@ -12,8 +16,20 @@ export const errorHandler: ErrorRequestHandler = (
     res.status(404).json({ message: err.message });
     return;
   }
-  if(err instanceof UserConflictError){
-    res.status(409).json({message: err.message});
+  if (err instanceof UserConflictError) {
+    res.status(409).json({ message: err.message });
+    return;
+  }
+  if (err instanceof CarNotFoundError) {
+    res.status(404).json({ message: err.message });
+    return;
+  }
+  if (err instanceof CarConflictError || err instanceof CarRentedError) {
+    res.status(409).json({ message: err.message });
+    return;
+  }
+  if (err instanceof CarInvalidTransitionError) {
+    res.status(400).json({ message: err.message });
     return;
   }
 

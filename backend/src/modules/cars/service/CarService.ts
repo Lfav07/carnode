@@ -29,23 +29,13 @@ export class CarService {
     return car;
   }
 
-  private async findCarByPlateOrThrow(plate: string) {
-    const car = await this.carRepository.findByPlate(plate);
-
-    if (!car) {
-      throw new CarNotFoundError(`Car with plate '${plate}' not found`);
-    }
-
-    return car;
-  }
-
   async getCarById(id: string): Promise<CarResponseDto> {
     const car = await this.findCarOrThrow(id);
 
     return CarResponseMapper.toResponse(car);
   }
 
-   async userGetCars(
+  async userGetCars(
     queryParams: CarQueryInput,
   ): Promise<PaginatedResponse<UserCarResponseDto>> {
     const result = await this.carRepository.findPaginated(queryParams);
@@ -75,14 +65,9 @@ export class CarService {
     };
   }
 
-  async getCarByPlate(plate: string): Promise<CarResponseDto> {
-    const car = await this.findCarByPlateOrThrow(plate);
-
-    return CarResponseMapper.toResponse(car);
-  }
-
   async registerCar(input: CarCreateInput): Promise<CarResponseDto> {
     const existingCar = await this.carRepository.findByPlate(input.plate);
+
     if (existingCar) {
       throw new CarConflictError(
         `Car with plate '${input.plate}' already exists`,
@@ -90,6 +75,7 @@ export class CarService {
     }
 
     const car = await this.carRepository.create(input);
+
     return CarResponseMapper.toResponse(car);
   }
 

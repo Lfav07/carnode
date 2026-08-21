@@ -1,3 +1,5 @@
+import type { CarStatus } from "../../domain/CarStatus.js";
+
 export interface CarResponseDto {
   id: string;
   brand: string;
@@ -5,7 +7,7 @@ export interface CarResponseDto {
   year: number;
   category: string;
   plate: string;
-  status: string;
+  status: CarStatus;
   dailyRate: string;
   createdAt: string;
   updatedAt: string;

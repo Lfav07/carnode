@@ -17,7 +17,7 @@ export class CarResponseMapper {
       updatedAt: car.updatedAt.toISOString(),
     };
   }
-  static toUserResponse(car: Car): UserCarResponseDto{
+  static toUserResponse(car: Car): UserCarResponseDto {
     return {
       id: car.id,
       brand: car.brand,

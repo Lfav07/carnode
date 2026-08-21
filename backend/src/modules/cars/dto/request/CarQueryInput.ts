@@ -1,14 +1,17 @@
+import type { CarStatus } from "../../domain/CarStatus.js";
+
 export interface CarQueryInput {
   page: number;
   limit: number;
   sortBy: "createdAt" | "brand" | "model" | "dailyRate";
   sortOrder: "asc" | "desc";
-  brand?: string;
-  category?: string;
-  status?: string;
-  minYear?: number;
-  maxYear?: number;
-  model?: string;
-  year?: number;
-  dailyRate?: string;
+  brand?: string | undefined;
+  category?: string | undefined;
+  status?: CarStatus | undefined;
+  minYear?: number | undefined;
+  maxYear?: number | undefined;
+  model?: string | undefined;
+  year?: number | undefined;
+  dailyRate?: string | undefined;
+  plate?: string | undefined;
 }

@@ -12,5 +12,4 @@ export interface CarRepository {
   create(input: CarCreateInput): Promise<Car>;
   update(id: string, input: CarUpdateInput): Promise<Car>;
   updateStatus(id: string, status: CarStatus): Promise<Car>;
-  delete(id: string): Promise<boolean>;
 }
