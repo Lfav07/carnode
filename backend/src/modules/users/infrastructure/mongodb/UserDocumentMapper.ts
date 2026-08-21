@@ -4,8 +4,11 @@ import type { UserDocument } from "./UserDocument.js";
 
 export class UserDocumentMapper {
   static toDomain(doc: UserDocument): User {
+    if (!doc._id) {
+      throw new Error("Cannot map UserDocument to User: missing _id");
+    }
     return {
-      id: doc._id?.toHexString() ?? "",
+      id: doc._id.toHexString(),
       email: doc.email,
       keycloakId: doc.keycloak_id,
       createdAt: doc.created_at,
