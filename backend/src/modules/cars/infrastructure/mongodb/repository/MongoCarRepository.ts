@@ -8,9 +8,9 @@ import {
 } from "mongodb";
 import type { Car } from "../../../domain/Car.js";
 import type { CarRepository } from "../../../domain/CarRepository.js";
-import type { CarCreateInput } from "../../../dto/request/CarCreateInput.js";
-import type { CarUpdateInput } from "../../../dto/request/CarUpdateInput.js";
-import type { CarQueryInput } from "../../../dto/request/CarQueryInput.js";
+import type { CarCreateData } from "../../../domain/types/CarCreateData.js";
+import type { CarUpdateData } from "../../../domain/types/CarUpdateData.js";
+import type { CarQueryData } from "../../../domain/types/CarQueryData.js";
 import type { PaginatedResult } from "../../../../shared/pagination/PaginatedResult.js";
 import type { CarStatus } from "../../../domain/CarStatus.js";
 import type { CarDocument } from "../CarDocument.js";
@@ -50,7 +50,7 @@ export class MongoCarRepository implements CarRepository {
     return doc ? CarDocumentMapper.toDomain(doc) : null;
   }
 
-  async findPaginated(input: CarQueryInput): Promise<PaginatedResult<Car>> {
+  async findPaginated(input: CarQueryData): Promise<PaginatedResult<Car>> {
     const filter: Filter<CarDocument> = {};
     if (input.brand !== undefined) {
       filter.brand = input.brand;
@@ -85,7 +85,7 @@ export class MongoCarRepository implements CarRepository {
     }
 
     const skip = (input.page - 1) * input.limit;
-    const sortFieldMap: Record<CarQueryInput["sortBy"], string> = {
+    const sortFieldMap: Record<CarQueryData["sortBy"], string> = {
       createdAt: "created_at",
       brand: "brand",
       model: "model",
@@ -109,7 +109,7 @@ export class MongoCarRepository implements CarRepository {
     };
   }
 
-  async create(input: CarCreateInput): Promise<Car> {
+  async create(input: CarCreateData): Promise<Car> {
     const doc = CarDocumentMapper.toDocumentFromInput(input);
 
     try {
@@ -139,7 +139,7 @@ export class MongoCarRepository implements CarRepository {
     }
   }
 
-  async update(id: string, input: CarUpdateInput): Promise<Car> {
+  async update(id: string, input: CarUpdateData): Promise<Car> {
     const setFields: Partial<CarDocument> = {};
     if (input.brand !== undefined) {
       setFields.brand = input.brand;

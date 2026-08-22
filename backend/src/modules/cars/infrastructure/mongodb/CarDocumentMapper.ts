@@ -1,6 +1,6 @@
 import { Decimal128 } from "mongodb";
 import type { Car } from "../../domain/Car.js";
-import type { CarCreateInput } from "../../dto/request/CarCreateInput.js";
+import type { CarCreateData } from "../../domain/types/CarCreateData.js";
 import type { CarDocument } from "./CarDocument.js";
 
 export class CarDocumentMapper {
@@ -19,7 +19,7 @@ export class CarDocumentMapper {
     };
   }
 
-  static toDocumentFromInput(input: CarCreateInput): CarDocument {
+  static toDocumentFromInput(input: CarCreateData): CarDocument {
     const now = new Date();
     return {
       brand: input.brand,

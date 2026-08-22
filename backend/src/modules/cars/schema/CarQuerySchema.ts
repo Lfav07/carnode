@@ -34,6 +34,12 @@ export const carQuerySchema = z.object({
     )
     .optional(),
   plate: z.string().min(7).max(8).regex(/^[A-Z0-9]+$/).optional(),
-});
+}).refine(
+  (data) =>
+    !(data.year !== undefined && (data.minYear !== undefined || data.maxYear !== undefined)),
+  {
+    message: "Cannot use 'year' together with 'minYear' or 'maxYear'",
+  },
+);
 
 export type CarQueryParams = z.infer<typeof carQuerySchema>;

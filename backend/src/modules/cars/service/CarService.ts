@@ -1,13 +1,13 @@
 import type { CarRepository } from "../domain/CarRepository.js";
-import type { CarCreateInput } from "../dto/request/CarCreateInput.js";
-import type { CarUpdateInput } from "../dto/request/CarUpdateInput.js";
-import type { CarQueryInput } from "../dto/request/CarQueryInput.js";
+import type { CarCreateData } from "../domain/types/CarCreateData.js";
+import type { CarUpdateData } from "../domain/types/CarUpdateData.js";
+import type { CarQueryData } from "../domain/types/CarQueryData.js";
 import type { CarResponseDto } from "../dto/response/CarResponseDto.js";
 import type { PaginatedResponse } from "../../shared/pagination/PaginatedResponse.js";
 import { CarNotFoundError } from "../domain/errors/CarNotFoundError.js";
 import { CarConflictError } from "../domain/errors/CarConflictError.js";
 import { CarInvalidTransitionError } from "../domain/errors/CarInvalidTransitionError.js";
-import { CarRentedError } from "../domain/errors/CarRentedError.js";
+import { CarDeletionBlockedError } from "../domain/errors/CarDeletionBlockedError.js";
 import { CarResponseMapper } from "../dto/response/CarResponseMapper.js";
 import { PaginationMetaMapper } from "../../shared/pagination/PaginationMetaMapper.js";
 import {
@@ -36,7 +36,7 @@ export class CarService {
   }
 
   async userGetCars(
-    queryParams: CarQueryInput,
+    queryParams: CarQueryData,
   ): Promise<PaginatedResponse<UserCarResponseDto>> {
     const result = await this.carRepository.findPaginated(queryParams);
 
@@ -51,7 +51,7 @@ export class CarService {
   }
 
   async getCars(
-    queryParams: CarQueryInput,
+    queryParams: CarQueryData,
   ): Promise<PaginatedResponse<CarResponseDto>> {
     const result = await this.carRepository.findPaginated(queryParams);
 
@@ -65,7 +65,7 @@ export class CarService {
     };
   }
 
-  async registerCar(input: CarCreateInput): Promise<CarResponseDto> {
+  async registerCar(input: CarCreateData): Promise<CarResponseDto> {
     const existingCar = await this.carRepository.findByPlate(input.plate);
 
     if (existingCar) {
@@ -79,7 +79,7 @@ export class CarService {
     return CarResponseMapper.toResponse(car);
   }
 
-  async updateCar(id: string, input: CarUpdateInput): Promise<CarResponseDto> {
+  async updateCar(id: string, input: CarUpdateData): Promise<CarResponseDto> {
     const existingCar = await this.findCarOrThrow(id);
 
     if (input.plate !== undefined && input.plate !== existingCar.plate) {
@@ -120,7 +120,7 @@ export class CarService {
 
     const allowedTransitions = VALID_STATUS_TRANSITIONS[car.status];
     if (!allowedTransitions.includes("DELETED")) {
-      throw new CarRentedError(
+      throw new CarDeletionBlockedError(
         `Cannot transition car from '${car.status}' to 'DELETED'`,
       );
     }

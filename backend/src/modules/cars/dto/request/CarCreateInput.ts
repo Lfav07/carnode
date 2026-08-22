@@ -1,8 +1,1 @@
-export interface CarCreateInput {
-  brand: string;
-  model: string;
-  year: number;
-  category: string;
-  plate: string;
-  dailyRate: string;
-}
+export type { CarCreateData as CarCreateInput } from "../../domain/types/CarCreateData.js";
