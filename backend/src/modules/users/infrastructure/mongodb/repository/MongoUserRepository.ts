@@ -1,6 +1,6 @@
 import type { User } from "../../../domain/User.js";
 import type { UserRepository } from "../../../domain/UserRepository.js";
-import type { CreateUserInput } from "../../../dto/request/CreateUserInput.js";
+import type { CreateUserData } from "../../../domain/types/CreateUserData.js";
 import type { PaginationInput } from "../../../../shared/pagination/PaginationInput.js";
 import type { PaginatedResult } from "../../../../shared/pagination/PaginatedResult.js";
 import { Collection, Db, MongoServerError, ObjectId } from "mongodb";
@@ -66,7 +66,7 @@ export class MongoUserRepository implements UserRepository {
     };
   }
 
-  async create(input: CreateUserInput): Promise<User> {
+  async create(input: CreateUserData): Promise<User> {
     const doc = UserDocumentMapper.toDocumentFromInput(input);
     try {
       const result = await this.collection.insertOne(doc);

@@ -4,7 +4,7 @@ import type {
 } from "../../../shared/http/HttpClient.js";
 import { HttpError } from "../../../shared/http/HttpError.js";
 import type { IdentityProvider } from "../../domain/IdentityProvider.js";
-import type { IdentityRegisterRequest } from "../../dto/request/IdentityRegisterRequest.js";
+import type { IdentityRegistrationData } from "../../domain/types/IdentityRegistrationData.js";
 import { UserConflictError } from "../../domain/errors/UserConflictError.js";
 
 interface KeycloakTokenResponse {
@@ -72,7 +72,7 @@ export class KeycloakIdentityProvider implements IdentityProvider {
     return { Authorization: `Bearer ${token}` };
   }
 
-  async registerUser(request: IdentityRegisterRequest): Promise<string> {
+  async registerUser(request: IdentityRegistrationData): Promise<string> {
     const token = await this.getServiceToken();
 
     let response: HttpResponse<void>;

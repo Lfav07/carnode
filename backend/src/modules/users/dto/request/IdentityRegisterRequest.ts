@@ -1,4 +1,1 @@
-export interface IdentityRegisterRequest {
-    email: string,
-    password: string
-}
+export type { IdentityRegistrationData as IdentityRegisterRequest } from "../../domain/types/IdentityRegistrationData.js";

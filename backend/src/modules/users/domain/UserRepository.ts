@@ -1,7 +1,7 @@
-import type { CreateUserInput } from "../dto/request/CreateUserInput.js";
 import type { PaginationInput } from "../../shared/pagination/PaginationInput.js";
 import type { PaginatedResult } from "../../shared/pagination/PaginatedResult.js";
 import type { User } from "./User.js";
+import type { CreateUserData } from "./types/CreateUserData.js";
 
 export interface UserRepository {
   findById(id: string): Promise<User | null>;
@@ -12,7 +12,7 @@ export interface UserRepository {
 
   findPaginated(input: PaginationInput): Promise<PaginatedResult<User>>;
 
-  create(input: CreateUserInput): Promise<User>;
+  create(input: CreateUserData): Promise<User>;
 
   update(user: User): Promise<User>;
 

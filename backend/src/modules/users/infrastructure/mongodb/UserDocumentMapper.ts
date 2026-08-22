@@ -1,5 +1,5 @@
 import type { User } from "../../domain/User.js";
-import type { CreateUserInput } from "../../dto/request/CreateUserInput.js";
+import type { CreateUserData } from "../../domain/types/CreateUserData.js";
 import type { UserDocument } from "./UserDocument.js";
 
 export class UserDocumentMapper {
@@ -25,7 +25,7 @@ export class UserDocumentMapper {
     };
   }
 
-  static toDocumentFromInput(input: CreateUserInput): UserDocument {
+  static toDocumentFromInput(input: CreateUserData): UserDocument {
     const now = new Date();
     return {
       keycloak_id: input.keycloakId,

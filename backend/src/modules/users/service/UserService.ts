@@ -1,6 +1,6 @@
 import type { UserRepository } from "../domain/UserRepository.js";
-import type { CreateUserInput } from "../dto/request/CreateUserInput.js";
-import type { IdentityRegisterRequest } from "../dto/request/IdentityRegisterRequest.js";
+import type { CreateUserData } from "../domain/types/CreateUserData.js";
+import type { IdentityRegistrationData } from "../domain/types/IdentityRegistrationData.js";
 import type { UserResponseDto } from "../dto/response/UserResponseDto.js";
 import { UserNotFoundError } from "../domain/errors/UserNotFoundError.js";
 import { UserResponseMapper } from "../dto/response/UserResponseMapper.js";
@@ -76,13 +76,13 @@ export class UserService {
     return UserResponseMapper.toCurrentUserResponse(user);
   }
   async registerUser(request: CreateUserRequest): Promise<string> {
-    const keycloakRequest: IdentityRegisterRequest = {
+    const keycloakRequest: IdentityRegistrationData = {
       email: request.email,
       password: request.password,
     };
     const keycloakId =
       await this.identityProvider.registerUser(keycloakRequest);
-    const input: CreateUserInput = {
+    const input: CreateUserData = {
       keycloakId: keycloakId,
       email: request.email,
     };
