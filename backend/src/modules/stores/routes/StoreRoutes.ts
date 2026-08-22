@@ -52,7 +52,7 @@ export function storeRoutes(controller: StoreController): Router {
   );
 
   router.patch(
-    "/:id/location",
+    "/:id",
     authenticate(),
     authorize(ROLES.ADMIN),
     validateParams(storeIdParamsSchema),

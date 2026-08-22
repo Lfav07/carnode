@@ -4,7 +4,7 @@ import { UserConflictError } from "../../users/domain/errors/UserConflictError.j
 import { CarNotFoundError } from "../../cars/domain/errors/CarNotFoundError.js";
 import { CarConflictError } from "../../cars/domain/errors/CarConflictError.js";
 import { CarInvalidTransitionError } from "../../cars/domain/errors/CarInvalidTransitionError.js";
-import { CarRentedError } from "../../cars/domain/errors/CarRentedError.js";
+import { CarDeletionBlockedError } from "../../cars/domain/errors/CarDeletionBlockedError.js";
 import { StoreNotFoundError } from "../../stores/domain/errors/StoreNotFoundError.js";
 
 export const errorHandler: ErrorRequestHandler = (
@@ -29,7 +29,7 @@ export const errorHandler: ErrorRequestHandler = (
     res.status(404).json({ message: err.message });
     return;
   }
-  if (err instanceof CarConflictError || err instanceof CarRentedError) {
+  if (err instanceof CarConflictError || err instanceof CarDeletionBlockedError) {
     res.status(409).json({ message: err.message });
     return;
   }
