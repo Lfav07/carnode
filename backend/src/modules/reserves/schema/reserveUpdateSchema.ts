@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { pickupSchema } from "./pickupSchema.js";
-import { returnSchema } from "./returnSchema.js";
+import { pickupSchema } from "./PickupSchema.js";
+import { returnSchema } from "./ReturnSchema.js";
 
 export const reserveUpdateSchema = z
   .object({
