@@ -6,6 +6,10 @@ import { CarConflictError } from "../../cars/domain/errors/CarConflictError.js";
 import { CarInvalidTransitionError } from "../../cars/domain/errors/CarInvalidTransitionError.js";
 import { CarDeletionBlockedError } from "../../cars/domain/errors/CarDeletionBlockedError.js";
 import { StoreNotFoundError } from "../../stores/domain/errors/StoreNotFoundError.js";
+import { ReserveNotFoundError } from "../../reserves/domain/errors/ReserveNotFoundError.js";
+import { ReserveCarNotAvailableError } from "../../reserves/domain/errors/ReserveCarNotAvailableError.js";
+import { ReserveInvalidTransitionError } from "../../reserves/domain/errors/ReserveInvalidTransitionError.js";
+import { ReserveInvalidUpdateError } from "../../reserves/domain/errors/ReserveInvalidUpdateError.js";
 
 export const errorHandler: ErrorRequestHandler = (
   err,
@@ -34,6 +38,21 @@ export const errorHandler: ErrorRequestHandler = (
     return;
   }
   if (err instanceof CarInvalidTransitionError) {
+    res.status(400).json({ message: err.message });
+    return;
+  }
+  if (err instanceof ReserveNotFoundError) {
+    res.status(404).json({ message: err.message });
+    return;
+  }
+  if (err instanceof ReserveCarNotAvailableError) {
+    res.status(409).json({ message: err.message });
+    return;
+  }
+  if (
+    err instanceof ReserveInvalidTransitionError ||
+    err instanceof ReserveInvalidUpdateError
+  ) {
     res.status(400).json({ message: err.message });
     return;
   }

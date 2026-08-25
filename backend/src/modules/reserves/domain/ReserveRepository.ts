@@ -12,4 +12,10 @@ export interface ReserveRepository {
   create(input: ReserveCreateData): Promise<Reserve>;
   update(id: string, input: ReserveUpdateData): Promise<Reserve>;
   updateStatus(id: string, status: ReserveStatus): Promise<Reserve>;
+
+  existsOverlappingReservation(
+    carId: string,
+    pickupDate: Date,
+    returnDate: Date,
+  ): Promise<boolean>;
 }
