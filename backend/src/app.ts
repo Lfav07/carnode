@@ -4,6 +4,8 @@ import { makeUserModule } from "./modules/users/container.js";
 import { makeCarModule } from "./modules/cars/container.js";
 import { makeStoreModule } from "./modules/stores/container.js";
 import { errorHandler } from "./modules/shared/http/ErrorHandler.js";
+import { makeReserveModule } from "./modules/reserves/container.js";
+import { MongoReserveRepository } from "./modules/reserves/infrastructure/mongodb/repository/MongoReserveRepository.js";
 export class App {
   public readonly app = express();
 
@@ -18,14 +20,23 @@ export class App {
   }
 
   private configureRoutes() {
-    const { router } = makeUserModule(this.db);
-    this.app.use("/api/v1/users", router);
+    const { router: userRouter, userService } = makeUserModule(this.db);
+    this.app.use("/api/v1/users", userRouter);
 
-    const { router: carRouter } = makeCarModule(this.db);
+    const { router: carRouter, carService } = makeCarModule(this.db);
     this.app.use("/api/v1/cars", carRouter);
 
-    const { router: storeRouter } = makeStoreModule(this.db);
+    const { router: storeRouter, storeService } = makeStoreModule(this.db);
     this.app.use("/api/v1/stores", storeRouter);
+
+    const reserveRepository = new MongoReserveRepository(this.db);
+    const { router: reserveRouter } = makeReserveModule({
+      reserveRepository,
+      userService,
+      carService,
+      storeService,
+    });
+    this.app.use("/api/v1/reserves", reserveRouter);
   }
   private configureErrorHandler() {
     this.app.use(errorHandler);

@@ -18,6 +18,7 @@ import {
   VALID_STATUS_TRANSITIONS,
 } from "../domain/ReserveStatus.js";
 import { PaginationMetaMapper } from "../../shared/pagination/PaginationMetaMapper.js";
+import type { ReserveCreateRequest } from "../schema/ReserveCreateSchema.js";
 
 export class ReservesService {
   constructor(
@@ -68,7 +69,7 @@ export class ReservesService {
     };
   }
 
-  async createReserve(input: ReserveCreateData): Promise<ReserveResponseDto> {
+  async createReserve(input: ReserveCreateRequest): Promise<ReserveResponseDto> {
     await this.userService.getUserById(input.userId);
     const car = await this.carService.getCarById(input.carId);
     await this.storeService.getStoreById(input.pickup.storeId);
@@ -128,11 +129,6 @@ export class ReservesService {
       );
     }
 
-    if (status === "CONFIRMED") {
-      const pickupDate = new Date(reserve.pickup.date);
-      const returnDate = new Date(reserve.returnInfo.date);
-      await this.checkCarAvailability(reserve.carId, pickupDate, returnDate);
-    }
 
     if (status === "ACTIVE") {
       const pickupDate = new Date(reserve.pickup.date);

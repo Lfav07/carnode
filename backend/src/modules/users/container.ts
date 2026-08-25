@@ -21,5 +21,5 @@ export function makeUserModule(db: Db) {
 
   const router = userRoutes(userController);
 
-  return { router };
+  return { router, userService };
 }

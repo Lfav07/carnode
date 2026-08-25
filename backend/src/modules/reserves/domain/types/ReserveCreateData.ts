@@ -7,5 +7,5 @@ export interface ReserveCreateData {
   carId: string;
   pickup: Pickup;
   returnInfo: ReturnInfo;
-  pricing?: Pricing;
+  pricing: Pricing;
 }
