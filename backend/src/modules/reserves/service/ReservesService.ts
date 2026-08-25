@@ -12,12 +12,14 @@ import { ReserveNotFoundError } from "../domain/errors/ReserveNotFoundError.js";
 import { ReserveCarNotAvailableError } from "../domain/errors/ReserveCarNotAvailableError.js";
 import { ReserveInvalidTransitionError } from "../domain/errors/ReserveInvalidTransitionError.js";
 import { ReserveInvalidUpdateError } from "../domain/errors/ReserveInvalidUpdateError.js";
+import { ReserveForbiddenError } from "../domain/errors/ReserveForbiddenError.js";
 import { ReserveResponseMapper } from "../dto/response/ReserveResponseMapper.js";
 import {
   VALID_STATUS_TRANSITIONS,
 } from "../domain/ReserveStatus.js";
 import { PaginationMetaMapper } from "../../shared/pagination/PaginationMetaMapper.js";
 import type { ReserveCreateRequest } from "../schema/ReserveCreateSchema.js";
+import type { UserReserveCreateData } from "../domain/types/UserReserveCreateData.js";
 
 export class ReservesService {
   constructor(
@@ -40,6 +42,20 @@ export class ReservesService {
   async getReserveById(id: string): Promise<ReserveResponseDto> {
     const reserve = await this.findReserveOrThrow(id);
     return ReserveResponseMapper.toResponse(reserve);
+  }
+
+  async getUserReserveById(
+    id: string,
+    keycloakId: string,
+  ): Promise<UserReserveResponseDto> {
+    const reserve = await this.findReserveOrThrow(id);
+    const user = await this.userService.getUserByKeycloakId(keycloakId);
+
+    if (reserve.userId !== user.id) {
+      throw new ReserveForbiddenError("You can only access your own reservations");
+    }
+
+    return ReserveResponseMapper.toUserResponse(reserve);
   }
 
   async getReservesByUserId(userId: string): Promise<UserReserveResponseDto[]> {
@@ -114,6 +130,55 @@ export class ReservesService {
     return ReserveResponseMapper.toResponse(created);
   }
 
+  async createUserReserve(
+    keycloakId: string,
+    input: UserReserveCreateData,
+  ): Promise<ReserveResponseDto> {
+    const user = await this.userService.getUserByKeycloakId(keycloakId);
+    const car = await this.carService.getCarById(input.carId);
+    await this.storeService.getStoreById(input.pickup.storeId);
+    await this.storeService.getStoreById(input.returnInfo.storeId);
+
+    if (car.status === "DELETED" || car.status === "MAINTENANCE") {
+      throw new ReserveCarNotAvailableError(
+        `Car '${input.carId}' cannot be reserved`,
+      );
+    }
+
+    const pickupDate = new Date(input.pickup.date);
+    const returnDate = new Date(input.returnInfo.date);
+
+    if (pickupDate >= returnDate) {
+      throw new ReserveInvalidUpdateError(
+        "Pickup date must be before return date",
+      );
+    }
+
+    const days = Math.ceil(
+      (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    const dailyRate = Number(car.dailyRate);
+    const subtotal = dailyRate * days;
+
+    const pricing = {
+      dailyRate: car.dailyRate,
+      days,
+      subtotal: subtotal.toFixed(2),
+    };
+
+    await this.checkCarAvailability(input.carId, pickupDate, returnDate);
+
+    const created = await this.reserveRepository.create({
+      userId: user.id,
+      carId: input.carId,
+      pickup: input.pickup,
+      returnInfo: input.returnInfo,
+      pricing,
+    });
+
+    return ReserveResponseMapper.toResponse(created);
+  }
+
   async updateReserveStatus(
     id: string,
     status: ReserveStatus,
@@ -148,6 +213,29 @@ export class ReservesService {
 
     const updated = await this.reserveRepository.updateStatus(id, status);
     return ReserveResponseMapper.toResponse(updated);
+  }
+
+  async cancelUserReserve(
+    id: string,
+    keycloakId: string,
+  ): Promise<UserReserveResponseDto> {
+    const reserve = await this.findReserveOrThrow(id);
+    const user = await this.userService.getUserByKeycloakId(keycloakId);
+
+    if (reserve.userId !== user.id) {
+      throw new ReserveForbiddenError("You can only cancel your own reservations");
+    }
+
+    const allowedTransitions = VALID_STATUS_TRANSITIONS[reserve.status];
+
+    if (!allowedTransitions.includes("CANCELLED")) {
+      throw new ReserveInvalidTransitionError(
+        `Cannot cancel reservation in '${reserve.status}' status`,
+      );
+    }
+
+    const updated = await this.reserveRepository.updateStatus(id, "CANCELLED");
+    return ReserveResponseMapper.toUserResponse(updated);
   }
 
   async updateReserve(

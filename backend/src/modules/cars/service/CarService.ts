@@ -35,6 +35,12 @@ export class CarService {
     return CarResponseMapper.toResponse(car);
   }
 
+  async getUserCarById(id: string): Promise<UserCarResponseDto> {
+    const car = await this.findCarOrThrow(id);
+
+    return CarResponseMapper.toUserResponse(car);
+  }
+
   async userGetCars(
     queryParams: CarQueryData,
   ): Promise<PaginatedResponse<UserCarResponseDto>> {

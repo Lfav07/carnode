@@ -16,7 +16,14 @@ export class CarController {
     res: Response,
   ): Promise<Response> {
     const { id } = req.params;
-    const car = await this.carService.getCarById(id);
+    const isAdmin = req.user?.roles.includes(ROLES.ADMIN) ?? false;
+
+    if (isAdmin) {
+      const car = await this.carService.getCarById(id);
+      return res.json(car);
+    }
+
+    const car = await this.carService.getUserCarById(id);
     return res.json(car);
   }
 

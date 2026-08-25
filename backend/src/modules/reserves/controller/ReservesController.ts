@@ -3,10 +3,12 @@ import type { ReservesService } from "../service/ReservesService.js";
 import type { ReserveIdParams } from "../schema/ReserveIdParamsSchema.js";
 import type { ReserveQueryParams } from "../schema/ReserveQuerySchema.js";
 import type { ReserveCreateRequest } from "../schema/ReserveCreateSchema.js";
+import type { UserReserveCreateRequest } from "../schema/userReserveCreateSchema.js";
 import type { ReserveStatusUpdateRequest } from "../schema/ReserveStatusUpdateSchema.js";
 import type { ReserveUpdateRequest } from "../schema/ReserveUpdateSchema.js";
 import type { ReserveUpdateData } from "../domain/types/ReserveUpdateData.js";
 import { getValidatedQuery } from "../../shared/index.js";
+import { ROLES } from "../../shared/middleware/Roles.js";
 
 export class ReservesController {
   constructor(private readonly reservesService: ReservesService) {}
@@ -16,7 +18,15 @@ export class ReservesController {
     res: Response,
   ): Promise<Response> {
     const { id } = req.params;
-    const reserve = await this.reservesService.getReserveById(id);
+    const isAdmin = req.user?.roles.includes(ROLES.ADMIN) ?? false;
+
+    if (isAdmin) {
+      const reserve = await this.reservesService.getReserveById(id);
+      return res.json(reserve);
+    }
+
+    const keycloakId = req.user!.sub;
+    const reserve = await this.reservesService.getUserReserveById(id, keycloakId);
     return res.json(reserve);
   }
 
@@ -71,13 +81,36 @@ export class ReservesController {
       .json(reserve);
   }
 
+  async createUserReserve(
+    req: Request<{}, {}, UserReserveCreateRequest>,
+    res: Response,
+  ): Promise<Response> {
+    const keycloakId = req.user!.sub;
+    const reserve = await this.reservesService.createUserReserve(
+      keycloakId,
+      req.body,
+    );
+    return res
+      .status(201)
+      .set("Location", `/api/v1/reserves/${reserve.id}`)
+      .json(reserve);
+  }
+
   async updateReserveStatus(
     req: Request<ReserveIdParams, {}, ReserveStatusUpdateRequest>,
     res: Response,
   ): Promise<Response> {
     const { id } = req.params;
     const { status } = req.body;
-    const reserve = await this.reservesService.updateReserveStatus(id, status);
+    const isAdmin = req.user?.roles.includes(ROLES.ADMIN) ?? false;
+
+    if (isAdmin) {
+      const reserve = await this.reservesService.updateReserveStatus(id, status);
+      return res.json(reserve);
+    }
+
+    const keycloakId = req.user!.sub;
+    const reserve = await this.reservesService.cancelUserReserve(id, keycloakId);
     return res.json(reserve);
   }
 

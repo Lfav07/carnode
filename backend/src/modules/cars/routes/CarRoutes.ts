@@ -40,7 +40,7 @@ export function carRoutes(controller: CarController): Router {
   router.get(
     "/:id",
     authenticate(),
-    authorize(ROLES.ADMIN),
+    authorize(ROLES.ADMIN, ROLES.USER),
     validateParams(carIdParamsSchema),
     async (req: Request<CarIdParams>, res: Response) =>
       controller.getCarById(req, res),

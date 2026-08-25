@@ -16,6 +16,10 @@ import {
   reserveUpdateSchema,
   type ReserveUpdateRequest,
 } from "../schema/ReserveUpdateSchema.js";
+import {
+  userReserveCreateSchema,
+  type UserReserveCreateRequest,
+} from "../schema/userReserveCreateSchema.js";
 import { reserveQuerySchema } from "../schema/ReserveQuerySchema.js";
 import {
   authenticate,
@@ -37,6 +41,15 @@ export function reserveRoutes(controller: ReservesController): Router {
       controller.getCurrentUserReserves(req, res),
   );
 
+  router.post(
+    "/me",
+    authenticate(),
+    authorize(ROLES.USER),
+    validateBody(userReserveCreateSchema),
+    async (req: Request<{}, {}, UserReserveCreateRequest>, res: Response) =>
+      controller.createUserReserve(req, res),
+  );
+
   router.get(
     "/",
     authenticate(),
@@ -48,7 +61,7 @@ export function reserveRoutes(controller: ReservesController): Router {
   router.get(
     "/:id",
     authenticate(),
-    authorize(ROLES.ADMIN),
+    authorize(ROLES.ADMIN, ROLES.USER),
     validateParams(reserveIdParamsSchema),
     async (req: Request<ReserveIdParams>, res: Response) =>
       controller.getReserveById(req, res),
@@ -66,7 +79,7 @@ export function reserveRoutes(controller: ReservesController): Router {
   router.patch(
     "/:id/status",
     authenticate(),
-    authorize(ROLES.ADMIN),
+    authorize(ROLES.ADMIN, ROLES.USER),
     validateParams(reserveIdParamsSchema),
     validateBody(reserveStatusUpdateSchema),
     async (
