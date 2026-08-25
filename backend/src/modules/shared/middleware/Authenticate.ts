@@ -52,7 +52,7 @@ export const authenticate = () => {
       },
       (err, decoded) => {
         if (err) {
-          res.status(401).json({ message: "Invalid or expired token", detail: err.message });
+          res.status(401).json({ message: "Invalid or expired token" });
           return;
         }
 

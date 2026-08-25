@@ -1,7 +1,6 @@
 import {
   Collection,
   Db,
-  Decimal128,
   ObjectId,
   type Filter,
 } from "mongodb";
@@ -112,19 +111,16 @@ export class MongoReserveRepository implements ReserveRepository {
 
   async update(id: string, input: ReserveUpdateData): Promise<Reserve> {
     const setFields: Partial<ReserveDocument> = {};
+    const mapped = ReserveDocumentMapper.toDocumentUpdate(input);
 
     if (input.pickup !== undefined) {
-      setFields.pickup_info = input.pickup;
+      setFields.pickup_info = mapped.pickup_info;
     }
     if (input.returnInfo !== undefined) {
-      setFields.return_info = input.returnInfo;
+      setFields.return_info = mapped.return_info;
     }
     if (input.pricing !== undefined) {
-      setFields.pricing = {
-        daily_rate: Decimal128.fromString(input.pricing.dailyRate),
-        days: input.pricing.days,
-        subtotal: Decimal128.fromString(input.pricing.subtotal),
-      };
+      setFields.pricing = mapped.pricing;
     }
     setFields.updated_at = new Date();
 

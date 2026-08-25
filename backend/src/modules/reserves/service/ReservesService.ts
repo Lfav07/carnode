@@ -1,5 +1,4 @@
 import type { ReserveRepository } from "../domain/ReserveRepository.js";
-import type { ReserveCreateData } from "../domain/types/ReserveCreateData.js";
 import type { ReserveUpdateData } from "../domain/types/ReserveUpdateData.js";
 import type { ReserveQueryData } from "../domain/types/ReserveQueryData.js";
 import type { ReserveStatus } from "../domain/ReserveStatus.js";

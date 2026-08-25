@@ -1,15 +1,5 @@
 import type { ErrorRequestHandler } from "express";
-import { UserNotFoundError } from "../../users/domain/errors/UserNotFoundError.js";
-import { UserConflictError } from "../../users/domain/errors/UserConflictError.js";
-import { CarNotFoundError } from "../../cars/domain/errors/CarNotFoundError.js";
-import { CarConflictError } from "../../cars/domain/errors/CarConflictError.js";
-import { CarInvalidTransitionError } from "../../cars/domain/errors/CarInvalidTransitionError.js";
-import { CarDeletionBlockedError } from "../../cars/domain/errors/CarDeletionBlockedError.js";
-import { StoreNotFoundError } from "../../stores/domain/errors/StoreNotFoundError.js";
-import { ReserveNotFoundError } from "../../reserves/domain/errors/ReserveNotFoundError.js";
-import { ReserveCarNotAvailableError } from "../../reserves/domain/errors/ReserveCarNotAvailableError.js";
-import { ReserveInvalidTransitionError } from "../../reserves/domain/errors/ReserveInvalidTransitionError.js";
-import { ReserveInvalidUpdateError } from "../../reserves/domain/errors/ReserveInvalidUpdateError.js";
+import { DomainError } from "../errors/DomainError.js";
 
 export const errorHandler: ErrorRequestHandler = (
   err,
@@ -17,43 +7,8 @@ export const errorHandler: ErrorRequestHandler = (
   res,
   _next,
 ) => {
-  if (err instanceof UserNotFoundError) {
-    res.status(404).json({ message: err.message });
-    return;
-  }
-  if (err instanceof UserConflictError) {
-    res.status(409).json({ message: err.message });
-    return;
-  }
-  if (err instanceof CarNotFoundError) {
-    res.status(404).json({ message: err.message });
-    return;
-  }
-  if (err instanceof StoreNotFoundError) {
-    res.status(404).json({ message: err.message });
-    return;
-  }
-  if (err instanceof CarConflictError || err instanceof CarDeletionBlockedError) {
-    res.status(409).json({ message: err.message });
-    return;
-  }
-  if (err instanceof CarInvalidTransitionError) {
-    res.status(400).json({ message: err.message });
-    return;
-  }
-  if (err instanceof ReserveNotFoundError) {
-    res.status(404).json({ message: err.message });
-    return;
-  }
-  if (err instanceof ReserveCarNotAvailableError) {
-    res.status(409).json({ message: err.message });
-    return;
-  }
-  if (
-    err instanceof ReserveInvalidTransitionError ||
-    err instanceof ReserveInvalidUpdateError
-  ) {
-    res.status(400).json({ message: err.message });
+  if (err instanceof DomainError) {
+    res.status(err.httpStatusCode).json({ message: err.message });
     return;
   }
 

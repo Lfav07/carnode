@@ -1,6 +1,9 @@
-export class ReserveInvalidTransitionError extends Error {
+import { DomainError } from "../../../shared/errors/DomainError.js";
+
+export class ReserveInvalidTransitionError extends DomainError {
+  readonly httpStatusCode = 400;
+
   constructor(message: string) {
     super(message);
-    this.name = "ReserveInvalidTransitionError";
   }
 }
