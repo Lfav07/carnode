@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ReservesController } from "../../../../../../../src/modules/reserves/controller/ReservesController.js";
-import type { ReservesService } from "../../../../../../../src/modules/reserves/service/ReservesService.js";
+import { ReservesController } from "../../../../../src/modules/reserves/controller/ReservesController.js";
+import type { ReservesService } from "../../../../../src/modules/reserves/service/ReservesService.js";
 import type { Request, Response } from "express";
 import { getValidatedQuery } from "../../../../../src/modules/shared/index.js";
 
@@ -20,7 +20,9 @@ const reservesService = {
   updateReserve: vi.fn(),
 };
 
-function createMockReq(overrides: Record<string, unknown> = {}) {
+function createMockReq(
+  overrides: Record<string, unknown> = {},
+): Request<any> {
   return {
     params: {},
     query: {},
@@ -28,7 +30,7 @@ function createMockReq(overrides: Record<string, unknown> = {}) {
     validatedQuery: {},
     user: undefined,
     ...overrides,
-  } as Request;
+  } as unknown as Request<any>;
 }
 
 function createMockRes() {
