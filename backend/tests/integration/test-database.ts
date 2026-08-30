@@ -17,10 +17,9 @@ export async function connectTestDatabase() {
   return db;
 }
 
-export function getTestDatabase() {
-  return db;
+export function getTestDatabase(){
+    return db;
 }
-
 export async function clearTestDatabase() {
   const collections = await db.collections();
 
