@@ -1,4 +1,23 @@
-services: 
+services:
+  backend:
+    build: "./backend"
+    environment:
+      KEYCLOAK_BASE_URI: http://keycloak:8080
+      KEYCLOAK_CLIENT_ID: user-service
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-J529zbiOM91EWc2kkkReqXeCjc6gkptKZyxBXQs1K4tBb7ISKkVcaVbKF5clehzaFTC38E5AT9kLk7w2m44OlW} 
+      KEYCLOAK_REALM: carnode
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/carnode
+      MONGODB_URI: mongodb://admin:admin@carnode-db:27017/?authSource=admin
+      MONGODB_DATABASE: carnode
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+    depends_on:
+      keycloak:
+        condition: service_started
+      carnode-db:
+        condition: service_healthy
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     environment:
@@ -41,11 +60,33 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+  carnode-db:
+    image: mongo:8
+    container_name: carnode-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-carnode}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - carnode-mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s 
+    networks:
+      - backend
+
 
 networks:
   backend:
+  
 
 volumes:
   keycloak_data:
   app_data:
-      
+  carnode-mongo-data:
