@@ -141,8 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
 agents
 .agents
 plans
 **/plans
 specs
+final-revision.md
