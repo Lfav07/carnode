@@ -1,11 +1,11 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient, type Db } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 
 let mongoServer: MongoMemoryServer;
 let client: MongoClient;
 let db: Db;
 
-export async function connectTestDatabase(): Promise<Db> {
+export async function connectTestDatabase() {
   mongoServer = await MongoMemoryServer.create();
 
   client = new MongoClient(mongoServer.getUri());
@@ -17,11 +17,10 @@ export async function connectTestDatabase(): Promise<Db> {
   return db;
 }
 
-export function getTestDatabase(): Db {
-  return db;
+export function getTestDatabase(){
+    return db;
 }
-
-export async function clearTestDatabase(): Promise<void> {
+export async function clearTestDatabase() {
   const collections = await db.collections();
 
   for (const collection of collections) {
@@ -29,7 +28,7 @@ export async function clearTestDatabase(): Promise<void> {
   }
 }
 
-export async function disconnectTestDatabase(): Promise<void> {
+export async function disconnectTestDatabase() {
   await client.close();
   await mongoServer.stop();
 }
