@@ -182,8 +182,8 @@ describe("User repository integration tests", () => {
       });
 
       expect(result.data).toHaveLength(2);
-      expect(result.data[0].email).toBe("aaa@example.com");
-      expect(result.data[1].email).toBe("zzz@example.com");
+      expect(result.data[0]!.email).toBe("aaa@example.com");
+      expect(result.data[1]!.email).toBe("zzz@example.com");
     });
 
     it("should return empty data array when no users exist", async () => {

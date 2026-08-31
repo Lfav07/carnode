@@ -147,7 +147,7 @@ describe("Car repository integration tests", () => {
       const result = await carRepository.findPaginated(query);
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].category).toBe("SUV");
+      expect(result.data[0]!.category).toBe("SUV");
     });
 
     it("should filter by status", async () => {
@@ -163,7 +163,7 @@ describe("Car repository integration tests", () => {
       const result = await carRepository.findPaginated(query);
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].status).toBe("RENTED");
+      expect(result.data[0]!.status).toBe("RENTED");
     });
 
     it("should filter by year range", async () => {
@@ -181,7 +181,7 @@ describe("Car repository integration tests", () => {
       const result = await carRepository.findPaginated(query);
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].year).toBe(2022);
+      expect(result.data[0]!.year).toBe(2022);
     });
 
     it("should filter by model", async () => {
@@ -196,7 +196,7 @@ describe("Car repository integration tests", () => {
       const result = await carRepository.findPaginated(query);
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].model).toBe("COROLLA");
+      expect(result.data[0]!.model).toBe("COROLLA");
     });
 
     it("should respect sortBy and sortOrder", async () => {
@@ -216,9 +216,9 @@ describe("Car repository integration tests", () => {
       });
       const resultAsc = await carRepository.findPaginated(queryAsc);
 
-      expect(resultAsc.data[0].brand).toBe("AUDI");
-      expect(resultAsc.data[1].brand).toBe("BMW");
-      expect(resultAsc.data[2].brand).toBe("TESLA");
+      expect(resultAsc.data[0]!.brand).toBe("AUDI");
+      expect(resultAsc.data[1]!.brand).toBe("BMW");
+      expect(resultAsc.data[2]!.brand).toBe("TESLA");
 
       const queryDesc = buildCarQueryData({
         sortBy: "brand",
@@ -226,9 +226,9 @@ describe("Car repository integration tests", () => {
       });
       const resultDesc = await carRepository.findPaginated(queryDesc);
 
-      expect(resultDesc.data[0].brand).toBe("TESLA");
-      expect(resultDesc.data[1].brand).toBe("BMW");
-      expect(resultDesc.data[2].brand).toBe("AUDI");
+      expect(resultDesc.data[0]!.brand).toBe("TESLA");
+      expect(resultDesc.data[1]!.brand).toBe("BMW");
+      expect(resultDesc.data[2]!.brand).toBe("AUDI");
     });
 
     it("should calculate correct skip/limit for pagination", async () => {

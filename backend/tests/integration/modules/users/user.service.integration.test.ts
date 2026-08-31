@@ -18,12 +18,10 @@ import { UserNotFoundError } from "../../../../src/modules/users/domain/errors/U
 import { UserConflictError } from "../../../../src/modules/users/domain/errors/UserConflictError.js";
 import {
   createMockIdentityProvider,
-  resetMockIdentityProvider,
   type MockIdentityProvider,
 } from "./fixtures/identity-provider.mock.js";
 import {
   buildCreateUserData,
-  buildUser,
   randomEmail,
 } from "./fixtures/user.factory.js";
 
@@ -63,11 +61,11 @@ describe("UserService integration tests", () => {
       });
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].email).toBe(email);
-      expect(result.data[0].id).toBeDefined();
-      expect(result.data[0].keycloakId).toBeDefined();
-      expect(result.data[0].createdAt).toBeDefined();
-      expect(result.data[0].updatedAt).toBeDefined();
+      expect(result.data[0]!.email).toBe(email);
+      expect(result.data[0]!.id).toBeDefined();
+      expect(result.data[0]!.keycloakId).toBeDefined();
+      expect(result.data[0]!.createdAt).toBeDefined();
+      expect(result.data[0]!.updatedAt).toBeDefined();
     });
 
     it("should return empty result when no users exist", async () => {
@@ -183,8 +181,8 @@ describe("UserService integration tests", () => {
 
       expect(userId).toBeDefined();
       expect(mockIdentityProvider.calls.registerUser).toHaveLength(1);
-      expect(mockIdentityProvider.calls.registerUser[0].email).toBe(email);
-      expect(mockIdentityProvider.calls.registerUser[0].password).toBe(
+      expect(mockIdentityProvider.calls.registerUser[0]!.email).toBe(email);
+      expect(mockIdentityProvider.calls.registerUser[0]!.password).toBe(
         "password123",
       );
 
@@ -239,10 +237,10 @@ describe("UserService integration tests", () => {
       await userService.updateEmail(created.id, { email: newEmail });
 
       expect(mockIdentityProvider.calls.changeEmail).toHaveLength(1);
-      expect(mockIdentityProvider.calls.changeEmail[0].id).toBe(
+      expect(mockIdentityProvider.calls.changeEmail[0]!.id).toBe(
         created.keycloakId,
       );
-      expect(mockIdentityProvider.calls.changeEmail[0].email).toBe(newEmail);
+      expect(mockIdentityProvider.calls.changeEmail[0]!.email).toBe(newEmail);
 
       const updated = await userRepository.findById(created.id);
       expect(updated?.email).toBe(newEmail);
@@ -282,10 +280,10 @@ describe("UserService integration tests", () => {
       });
 
       expect(mockIdentityProvider.calls.changePassword).toHaveLength(1);
-      expect(mockIdentityProvider.calls.changePassword[0].id).toBe(
+      expect(mockIdentityProvider.calls.changePassword[0]!.id).toBe(
         created.keycloakId,
       );
-      expect(mockIdentityProvider.calls.changePassword[0].password).toBe(
+      expect(mockIdentityProvider.calls.changePassword[0]!.password).toBe(
         "newpassword",
       );
     });

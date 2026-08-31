@@ -1,6 +1,6 @@
-import type { CarAvailabilityService } from "../../../../src/modules/reserves/domain/ports/CarAvailabilityService.js";
-import type { CarResponseDto } from "../../../../src/modules/cars/dto/response/CarResponseDto.js";
-import type { CarStatus } from "../../../../src/modules/cars/domain/CarStatus.js";
+import type { CarAvailabilityService } from "../../../../../src/modules/reserves/domain/ports/CarAvailabilityService.js";
+import type { CarResponseDto } from "../../../../../src/modules/cars/dto/response/CarResponseDto.js";
+import type { CarStatus } from "../../../../../src/modules/cars/domain/CarStatus.js";
 
 export interface MockCarAvailabilityServiceState {
   cars: Map<string, CarResponseDto>;

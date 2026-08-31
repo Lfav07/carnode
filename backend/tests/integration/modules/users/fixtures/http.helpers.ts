@@ -58,7 +58,7 @@ function testAuthenticate() {
 
     const token = authHeader.slice(7);
 
-    let decoded: jwt.JwtPayload;
+    let decoded: jwt.JwtPayload | null;
     try {
       decoded = jwt.decode(token) as jwt.JwtPayload | null;
       if (!decoded || typeof decoded !== "object") {

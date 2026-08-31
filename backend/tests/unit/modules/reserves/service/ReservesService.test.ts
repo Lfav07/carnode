@@ -166,8 +166,8 @@ describe("ReservesService", () => {
       const result = await service.getReservesByUserId(DUMMY_RESERVE.userId);
 
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(DUMMY_RESERVE.id);
-      expect(result[0].carId).toBe(DUMMY_RESERVE.carId);
+      expect(result[0]!.id).toBe(DUMMY_RESERVE.id);
+      expect(result[0]!.carId).toBe(DUMMY_RESERVE.carId);
       expect(result[0]).not.toHaveProperty("userId");
     });
 
@@ -220,7 +220,7 @@ describe("ReservesService", () => {
       });
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].id).toBe(DUMMY_RESERVE.id);
+      expect(result.data[0]!.id).toBe(DUMMY_RESERVE.id);
       expect(result.meta.currentPage).toBe(1);
       expect(result.meta.totalCount).toBe(1);
       expect(result.meta.totalPages).toBe(1);
@@ -256,11 +256,11 @@ describe("ReservesService", () => {
       userId: DUMMY_RESERVE.userId,
       carId: DUMMY_RESERVE.carId,
       pickup: {
-        date: DUMMY_RESERVE.pickup.date.toISOString(),
+        date: new Date(DUMMY_RESERVE.pickup.date.toISOString()),
         storeId: DUMMY_RESERVE.pickup.storeId,
       },
       returnInfo: {
-        date: DUMMY_RESERVE.returnInfo.date.toISOString(),
+        date: new Date(DUMMY_RESERVE.returnInfo.date.toISOString()),
         storeId: DUMMY_RESERVE.returnInfo.storeId,
       },
     };
@@ -317,11 +317,11 @@ describe("ReservesService", () => {
       const invalidInput: ReserveCreateRequest = {
         ...createInput,
         pickup: {
-          date: "2025-01-05T10:00:00.000Z",
+          date: new Date("2025-01-05T10:00:00.000Z"),
           storeId: "store-id-789",
         },
         returnInfo: {
-          date: "2025-01-01T10:00:00.000Z",
+          date: new Date("2025-01-01T10:00:00.000Z"),
           storeId: "store-id-789",
         },
       };
@@ -351,7 +351,7 @@ describe("ReservesService", () => {
 
       await service.createReserve(createInput);
 
-      const createCall = reserveRepository.create.mock.calls[0][0];
+      const createCall = reserveRepository.create.mock.calls[0]![0]!;
       expect(createCall.pricing.days).toBe(4);
       expect(createCall.pricing.dailyRate).toBe("50.00");
       expect(createCall.pricing.subtotal).toBe("200.00");
@@ -661,7 +661,7 @@ describe("ReservesService", () => {
 
       await service.updateReserve(pendingReserve.id, updateData);
 
-      const updateCall = reserveRepository.update.mock.calls[0][1];
+      const updateCall = reserveRepository.update.mock.calls[0]![1]!;
       expect(updateCall.pricing).toBeDefined();
       expect(updateCall.pricing!.dailyRate).toBe("50.00");
     });

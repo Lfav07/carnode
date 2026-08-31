@@ -230,13 +230,13 @@ describe("User HTTP integration tests", () => {
       const token = generateTestJwt({ roles: ["user"] });
 
       const payload = JSON.parse(
-        Buffer.from(token.split(".")[1], "base64url").toString(),
+        Buffer.from(token.split(".")[1]!, "base64url").toString(),
       );
       delete payload.sub;
       const tokenWithoutSub = [
-        token.split(".")[0],
+        token.split(".")[0]!,
         Buffer.from(JSON.stringify(payload)).toString("base64url"),
-        token.split(".")[2],
+        token.split(".")[2]!,
       ].join(".");
 
       const res = await request(testApp.app)
@@ -375,7 +375,7 @@ describe("User HTTP integration tests", () => {
 
       expect(res.status).toBe(204);
       expect(mockIdentityProvider.calls.changePassword).toHaveLength(1);
-      expect(mockIdentityProvider.calls.changePassword[0].id).toBe(
+      expect(mockIdentityProvider.calls.changePassword[0]!.id).toBe(
         created.keycloakId,
       );
     });

@@ -1,5 +1,5 @@
-import type { UserLookupService } from "../../../../src/modules/reserves/domain/ports/UserLookupService.js";
-import type { UserResponseDto } from "../../../../src/modules/users/dto/response/UserResponseDto.js";
+import type { UserLookupService } from "../../../../../src/modules/reserves/domain/ports/UserLookupService.js";
+import type { UserResponseDto } from "../../../../../src/modules/users/dto/response/UserResponseDto.js";
 
 export interface MockUserLookupServiceState {
   users: Map<string, UserResponseDto>;

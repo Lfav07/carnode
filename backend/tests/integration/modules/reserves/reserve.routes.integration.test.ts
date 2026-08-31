@@ -308,11 +308,11 @@ describe("Reserves routes integration tests", () => {
       const stored = await factory.createStoredReserve(db, {
         carId: TEST_CARS[0]!.id,
         pickup: {
-          date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 100).toISOString(),
+          date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 100),
           storeId: TEST_STORES[0]!.id,
         },
         returnInfo: {
-          date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 110).toISOString(),
+          date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 110),
           storeId: TEST_STORES[0]!.id,
         },
       });

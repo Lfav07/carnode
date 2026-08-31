@@ -1,10 +1,10 @@
 import { ObjectId, Decimal128, type Db } from "mongodb";
-import type { ReserveCreateData } from "../../../../src/modules/reserves/domain/types/ReserveCreateData.js";
-import type { ReserveUpdateData } from "../../../../src/modules/reserves/domain/types/ReserveUpdateData.js";
-import type { UserReserveCreateData } from "../../../../src/modules/reserves/domain/types/UserReserveCreateData.js";
-import type { ReserveQueryData } from "../../../../src/modules/reserves/domain/types/ReserveQueryData.js";
-import type { Reserve } from "../../../../src/modules/reserves/domain/Reserve.js";
-import type { ReserveDocument } from "../../../../src/modules/reserves/infrastructure/mongodb/ReserveDocument.js";
+import type { ReserveCreateData } from "../../../../../src/modules/reserves/domain/types/ReserveCreateData.js";
+import type { ReserveUpdateData } from "../../../../../src/modules/reserves/domain/types/ReserveUpdateData.js";
+import type { UserReserveCreateData } from "../../../../../src/modules/reserves/domain/types/UserReserveCreateData.js";
+import type { ReserveQueryData } from "../../../../../src/modules/reserves/domain/types/ReserveQueryData.js";
+import type { Reserve } from "../../../../../src/modules/reserves/domain/Reserve.js";
+import type { ReserveDocument } from "../../../../../src/modules/reserves/infrastructure/mongodb/ReserveDocument.js";
 import { TEST_USERS, TEST_CARS, TEST_STORES } from "./test-data.js";
 
 export interface ReserveFixtureFactory {

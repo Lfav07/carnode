@@ -1,5 +1,5 @@
-import type { StoreLookupService } from "../../../../src/modules/reserves/domain/ports/StoreLookupService.js";
-import type { StoreResponseDto } from "../../../../src/modules/stores/dto/response/StoreResponseDto.js";
+import type { StoreLookupService } from "../../../../../src/modules/reserves/domain/ports/StoreLookupService.js";
+import type { StoreResponseDto } from "../../../../../src/modules/stores/dto/response/StoreResponseDto.js";
 
 export interface MockStoreLookupServiceState {
   stores: Map<string, StoreResponseDto>;

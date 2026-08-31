@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import type { CarStatus } from "../../../../src/modules/cars/domain/CarStatus.js";
+import type { CarStatus } from "../../../../../src/modules/cars/domain/CarStatus.js";
 
 export interface TestUser {
   id: string;

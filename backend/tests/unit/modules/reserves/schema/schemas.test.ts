@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { pickupSchema } from "../../../../../src/modules/reserves/schema/PickupSchema.js";
 import { returnSchema } from "../../../../../src/modules/reserves/schema/ReturnSchema.js";
-import { pricingSchema } from "../../../../../src/modules/reserves/schema/PricingSchema.js";
+import { pricingSchema } from "../../../../../src/modules/reserves/schema/pricingSchema.js";
 import { reserveCreateSchema } from "../../../../../src/modules/reserves/schema/ReserveCreateSchema.js";
 import { userReserveCreateSchema } from "../../../../../src/modules/reserves/schema/userReserveCreateSchema.js";
 import { reserveUpdateSchema } from "../../../../../src/modules/reserves/schema/ReserveUpdateSchema.js";
