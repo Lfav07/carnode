@@ -100,6 +100,20 @@ describe("CarController", () => {
       expect(carService.getCarById).not.toHaveBeenCalled();
     });
 
+    it("should call getUserCarById when user is undefined", async () => {
+      const req = createMockReq({
+        params: { id: DUMMY_CAR.id },
+        user: undefined,
+      });
+      const res = createMockRes();
+      carService.getUserCarById.mockResolvedValue(DUMMY_USER_CAR);
+
+      await controller.getCarById(req, res);
+
+      expect(carService.getUserCarById).toHaveBeenCalledWith(DUMMY_CAR.id);
+      expect(carService.getCarById).not.toHaveBeenCalled();
+    });
+
     it("should return 200 with car for admin", async () => {
       const req = createMockReq({
         params: { id: DUMMY_CAR.id },
@@ -171,6 +185,67 @@ describe("CarController", () => {
 
       expect(carService.userGetCars).toHaveBeenCalled();
       expect(carService.getCars).not.toHaveBeenCalled();
+    });
+
+    it("should call userGetCars when user is undefined", async () => {
+      vi.mocked(getValidatedQuery).mockReturnValue({
+        page: 1,
+        limit: 20,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      });
+      const req = createMockReq({
+        user: undefined,
+      });
+      const res = createMockRes();
+      const paginatedResult = { data: [DUMMY_USER_CAR], meta: { totalCount: 1 } };
+      carService.userGetCars.mockResolvedValue(paginatedResult);
+
+      await controller.listCars(req, res);
+
+      expect(carService.userGetCars).toHaveBeenCalled();
+      expect(carService.getCars).not.toHaveBeenCalled();
+    });
+
+    it("should include all optional query params when provided", async () => {
+      vi.mocked(getValidatedQuery).mockReturnValue({
+        page: 1,
+        limit: 20,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+        brand: "TOYOTA",
+        category: "SUV",
+        status: "AVAILABLE",
+        model: "Corolla",
+        year: 2024,
+        minYear: 2020,
+        maxYear: 2025,
+        dailyRate: "150.00",
+        plate: "ABC1234",
+      });
+      const req = createMockReq({
+        user: { roles: ["admin"] },
+      });
+      const res = createMockRes();
+      carService.getCars.mockResolvedValue({ data: [], meta: { totalCount: 0 } });
+
+      await controller.listCars(req, res);
+
+      expect(carService.getCars).toHaveBeenCalledWith({
+        page: 1,
+        limit: 20,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+        brand: "TOYOTA",
+        category: "SUV",
+        status: "AVAILABLE",
+        model: "Corolla",
+        year: 2024,
+        minYear: 2020,
+        maxYear: 2025,
+        dailyRate: "150.00",
+        plate: "ABC1234",
+      });
     });
 
     it("should map query params correctly", async () => {

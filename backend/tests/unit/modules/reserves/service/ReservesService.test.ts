@@ -592,6 +592,27 @@ describe("ReservesService", () => {
       expect(reserveRepository.update).toHaveBeenCalled();
     });
 
+    it("should update only returnInfo, falling back to existing pickup", async () => {
+      const pendingReserve = { ...DUMMY_RESERVE, status: "PENDING" as const };
+      reserveRepository.findById.mockResolvedValue(pendingReserve);
+      storeService.getStoreById.mockResolvedValue(DUMMY_STORE);
+      reserveRepository.existsOverlappingReservation.mockResolvedValue(false);
+      carService.getCarById.mockResolvedValue(DUMMY_CAR);
+      reserveRepository.update.mockResolvedValue(pendingReserve);
+
+      const updateData: ReserveUpdateData = {
+        returnInfo: {
+          date: new Date("2025-01-04T10:00:00.000Z"),
+          storeId: "new-store-id",
+        },
+      };
+
+      const result = await service.updateReserve(pendingReserve.id, updateData);
+
+      expect(result).toBeDefined();
+      expect(reserveRepository.update).toHaveBeenCalled();
+    });
+
     it("should throw ReserveNotFoundError when reserve not found", async () => {
       reserveRepository.findById.mockResolvedValue(null);
 

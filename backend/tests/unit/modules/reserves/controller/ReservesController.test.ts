@@ -382,5 +382,25 @@ describe("ReservesController", () => {
         },
       );
     });
+
+    it("should build ReserveUpdateData with only returnInfo", async () => {
+      const req = createMockReq({
+        params: { id: "reserve-123" },
+        body: {
+          returnInfo: { date: "2025-02-05", storeId: "store-2" },
+        },
+      });
+      const res = createMockRes();
+      reservesService.updateReserve.mockResolvedValue({ id: "reserve-123" });
+
+      await controller.updateReserve(req, res);
+
+      expect(reservesService.updateReserve).toHaveBeenCalledWith(
+        "reserve-123",
+        {
+          returnInfo: { date: "2025-02-05", storeId: "store-2" },
+        },
+      );
+    });
   });
 });

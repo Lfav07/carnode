@@ -286,6 +286,54 @@ describe("Car repository integration tests", () => {
       );
     });
 
+    it("should update brand", async () => {
+      const createdCar = await carRepository.create(
+        buildCarCreateData({ brand: "TOYOTA" }),
+      );
+
+      const updatedCar = await carRepository.update(createdCar.id, {
+        brand: "HONDA",
+      });
+
+      expect(updatedCar.brand).toBe("HONDA");
+    });
+
+    it("should update year", async () => {
+      const createdCar = await carRepository.create(
+        buildCarCreateData({ year: 2023 }),
+      );
+
+      const updatedCar = await carRepository.update(createdCar.id, {
+        year: 2025,
+      });
+
+      expect(updatedCar.year).toBe(2025);
+    });
+
+    it("should update category", async () => {
+      const createdCar = await carRepository.create(
+        buildCarCreateData({ category: "SEDAN" }),
+      );
+
+      const updatedCar = await carRepository.update(createdCar.id, {
+        category: "SUV",
+      });
+
+      expect(updatedCar.category).toBe("SUV");
+    });
+
+    it("should update dailyRate", async () => {
+      const createdCar = await carRepository.create(
+        buildCarCreateData({ dailyRate: "100.00" }),
+      );
+
+      const updatedCar = await carRepository.update(createdCar.id, {
+        dailyRate: "200.00",
+      });
+
+      expect(updatedCar.dailyRate).toBe("200.00");
+    });
+
     it("should throw CarNotFoundError when updating a nonexistent car", async () => {
       await expect(
         carRepository.update("507f1f77bcf86cd799439011", { model: "TEST" }),
