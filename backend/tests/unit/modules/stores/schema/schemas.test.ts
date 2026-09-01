@@ -5,22 +5,48 @@ import { storeQuerySchema } from "../../../../../src/modules/stores/schema/Store
 import { updateLocationSchema } from "../../../../../src/modules/stores/schema/UpdateLocationSchema.js";
 
 describe("createStoreSchema", () => {
-  it("should accept valid location", () => {
+  it("should accept valid location object", () => {
     const result = createStoreSchema.safeParse({
-      location: "São Paulo - SP",
+      location: { name: "Store A", city: "São Paulo" },
     });
     expect(result.success).toBe(true);
   });
 
-  it("should reject empty location", () => {
-    const result = createStoreSchema.safeParse({ location: "" });
+  it("should reject empty location name", () => {
+    const result = createStoreSchema.safeParse({
+      location: { name: "", city: "São Paulo" },
+    });
     expect(result.success).toBe(false);
   });
 
-  it("should reject location > 200 chars", () => {
+  it("should reject empty location city", () => {
     const result = createStoreSchema.safeParse({
-      location: "a".repeat(201),
+      location: { name: "Store A", city: "" },
     });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject location name > 100 chars", () => {
+    const result = createStoreSchema.safeParse({
+      location: { name: "a".repeat(101), city: "São Paulo" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject location city > 100 chars", () => {
+    const result = createStoreSchema.safeParse({
+      location: { name: "Store A", city: "a".repeat(101) },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject missing location", () => {
+    const result = createStoreSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject string location", () => {
+    const result = createStoreSchema.safeParse({ location: "São Paulo" });
     expect(result.success).toBe(false);
   });
 });
@@ -40,9 +66,24 @@ describe("storeIdParamsSchema", () => {
 });
 
 describe("storeQuerySchema", () => {
-  it("should accept optional location", () => {
+  it("should accept optional location.city", () => {
     const result = storeQuerySchema.safeParse({
-      location: "São Paulo - SP",
+      "location.city": "São Paulo",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("should accept optional location.name", () => {
+    const result = storeQuerySchema.safeParse({
+      "location.name": "Store A",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("should accept both location.city and location.name", () => {
+    const result = storeQuerySchema.safeParse({
+      "location.city": "São Paulo",
+      "location.name": "Store A",
     });
     expect(result.success).toBe(true);
   });
@@ -52,24 +93,50 @@ describe("storeQuerySchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("should reject location > 200 chars", () => {
+  it("should reject location.city > 100 chars", () => {
     const result = storeQuerySchema.safeParse({
-      location: "a".repeat(201),
+      "location.city": "a".repeat(101),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject location.name > 100 chars", () => {
+    const result = storeQuerySchema.safeParse({
+      "location.name": "a".repeat(101),
     });
     expect(result.success).toBe(false);
   });
 });
 
 describe("updateLocationSchema", () => {
-  it("should accept valid location", () => {
+  it("should accept valid location object", () => {
     const result = updateLocationSchema.safeParse({
-      location: "São Paulo - SP",
+      location: { name: "Store A", city: "São Paulo" },
     });
     expect(result.success).toBe(true);
   });
 
-  it("should reject empty location", () => {
-    const result = updateLocationSchema.safeParse({ location: "" });
+  it("should reject empty location name", () => {
+    const result = updateLocationSchema.safeParse({
+      location: { name: "", city: "São Paulo" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty location city", () => {
+    const result = updateLocationSchema.safeParse({
+      location: { name: "Store A", city: "" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject missing location", () => {
+    const result = updateLocationSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject string location", () => {
+    const result = updateLocationSchema.safeParse({ location: "São Paulo" });
     expect(result.success).toBe(false);
   });
 });

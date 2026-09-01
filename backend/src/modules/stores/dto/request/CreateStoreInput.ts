@@ -1,3 +1,5 @@
+import type { StoreLocation } from "../../domain/StoreLocation.js";
+
 export interface CreateStoreInput {
-  location: string;
+  readonly location: StoreLocation;
 }

@@ -5,7 +5,10 @@ export class StoreResponseMapper {
   static toResponse(store: Store): StoreResponseDto {
     return {
       id: store.id,
-      location: store.location,
+      location: {
+        name: store.location.name,
+        city: store.location.city,
+      },
     };
   }
 }

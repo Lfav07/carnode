@@ -1,6 +1,7 @@
 import { Collection, Db, ObjectId } from "mongodb";
 import type { StoreRepository } from "../../../domain/StoreRepository.js";
 import type { Store } from "../../../domain/Store.js";
+import type { StoreLocation } from "../../../domain/StoreLocation.js";
 import type { CreateStoreInput } from "../../../dto/request/CreateStoreInput.js";
 import type { StoreDocument } from "../StoreDocument.js";
 import { StoreDocumentMapper } from "../StoreDocumentMapper.js";
@@ -18,8 +19,18 @@ export class MongoStoreRepository implements StoreRepository {
     return doc ? StoreDocumentMapper.toDomain(doc) : null;
   }
 
-  async findByLocation(location: string): Promise<Store[]> {
-    const docs = await this.collection.find({ location }).toArray();
+  async findByLocation(location: StoreLocation): Promise<Store[]> {
+    const filter: Record<string, string> = {};
+
+    if (location.name) {
+      filter["location.name"] = location.name;
+    }
+
+    if (location.city) {
+      filter["location.city"] = location.city;
+    }
+
+    const docs = await this.collection.find(filter).toArray();
     return docs.map(StoreDocumentMapper.toDomain);
   }
 
@@ -34,12 +45,12 @@ export class MongoStoreRepository implements StoreRepository {
     return StoreDocumentMapper.toDomain(doc);
   }
 
-  async updateLocation(id: string, location: string): Promise<Store> {
+  async updateLocation(id: string, location: StoreLocation): Promise<Store> {
     const filter = { _id: new ObjectId(id) };
 
     const updated = await this.collection.findOneAndUpdate(
       filter,
-      { $set: { location } },
+      { $set: { location: { name: location.name, city: location.city } } },
       { returnDocument: "after" },
     );
 

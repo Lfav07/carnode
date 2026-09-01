@@ -9,7 +9,10 @@ describe("StoreResponseMapper", () => {
 
       expect(result).toEqual({
         id: DUMMY_STORE.id,
-        location: DUMMY_STORE.location,
+        location: {
+          name: DUMMY_STORE.location.name,
+          city: DUMMY_STORE.location.city,
+        },
       });
     });
   });

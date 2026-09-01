@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import type { CarStatus } from "../../../../../src/modules/cars/domain/CarStatus.js";
+import type { StoreLocation } from "../../../../../src/modules/stores/domain/StoreLocation.js";
 
 export interface TestUser {
   id: string;
@@ -20,7 +21,7 @@ export interface TestCar {
 
 export interface TestStore {
   id: string;
-  location: string;
+  location: StoreLocation;
 }
 
 const user1Id = new ObjectId();
@@ -69,10 +70,10 @@ export const TEST_CARS: TestCar[] = [
 export const TEST_STORES: TestStore[] = [
   {
     id: store1Id.toHexString(),
-    location: "Downtown Branch",
+    location: { name: "Downtown Branch", city: "Rome" },
   },
   {
     id: store2Id.toHexString(),
-    location: "Airport Branch",
+    location: { name: "Airport Branch", city: "Milan" },
   },
 ];

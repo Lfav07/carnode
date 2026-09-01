@@ -59,7 +59,7 @@ const DUMMY_CAR = {
 
 const DUMMY_STORE = {
   id: "store-id-789",
-  location: "Downtown",
+  location: { name: "Downtown Branch", city: "Rome" },
 };
 
 const reserveRepository: Mocked<ReserveRepository> = {

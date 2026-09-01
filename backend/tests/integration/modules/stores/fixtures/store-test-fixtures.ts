@@ -1,7 +1,8 @@
 import type { Store } from "../../../../../src/modules/stores/domain/Store.js";
+import type { StoreLocation } from "../../../../../src/modules/stores/domain/StoreLocation.js";
 
 export interface CreateStoreFixtureInput {
-  readonly location: string;
+  readonly location: StoreLocation;
 }
 
 export interface StoreFixture extends Store {}

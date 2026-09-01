@@ -20,7 +20,15 @@ export class StoreController {
 
   async getStores(req: Request, res: Response): Promise<Response> {
     const query = getValidatedQuery<StoreQueryParams>(req);
-    const stores = await this.storeService.getStores(query.location);
+
+    const location = query["location.city"] || query["location.name"]
+      ? {
+          name: query["location.name"] ?? "",
+          city: query["location.city"] ?? "",
+        }
+      : undefined;
+
+    const stores = await this.storeService.getStores(location);
     return res.json(stores);
   }
 

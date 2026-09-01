@@ -1,4 +1,6 @@
+import type { StoreLocation } from "../../domain/StoreLocation.js";
+
 export interface StoreResponseDto {
-  id: string;
-  location: string;
+  readonly id: string;
+  readonly location: StoreLocation;
 }

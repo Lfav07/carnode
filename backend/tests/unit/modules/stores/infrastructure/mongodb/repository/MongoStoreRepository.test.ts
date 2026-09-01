@@ -1,8 +1,9 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db, ObjectId } from "mongodb";
 import { MongoStoreRepository } from "../../../../../../../src/modules/stores/infrastructure/mongodb/repository/MongoStoreRepository.js";
 import { StoreNotFoundError } from "../../../../../../../src/modules/stores/domain/errors/StoreNotFoundError.js";
+import type { StoreLocation } from "../../../../../../../src/modules/stores/domain/StoreLocation.js";
 
 let mongod: MongoMemoryServer;
 let client: MongoClient;
@@ -33,8 +34,8 @@ describe("MongoStoreRepository", () => {
   describe("findById", () => {
     it("should return store when document exists", async () => {
       await db.collection("stores").insertOne({
-        _id: new (await import("mongodb")).ObjectId(DUMMY_STORE_ID),
-        location: "São Paulo - SP",
+        _id: new ObjectId(DUMMY_STORE_ID),
+        location: { name: "Store A", city: "São Paulo" },
       });
 
       const result = await repository.findById(DUMMY_STORE_ID);
@@ -42,7 +43,7 @@ describe("MongoStoreRepository", () => {
       expect(result).not.toBeNull();
       expect(result).toEqual({
         id: DUMMY_STORE_ID,
-        location: "São Paulo - SP",
+        location: { name: "Store A", city: "São Paulo" },
       });
     });
 
@@ -55,25 +56,25 @@ describe("MongoStoreRepository", () => {
   describe("findByLocation", () => {
     it("should return matching stores", async () => {
       await db.collection("stores").insertMany([
-        { location: "São Paulo - SP" },
-        { location: "São Paulo - SP" },
-        { location: "Rio de Janeiro - RJ" },
+        { location: { name: "Store A", city: "São Paulo" } },
+        { location: { name: "Store B", city: "São Paulo" } },
+        { location: { name: "Store C", city: "Rio de Janeiro" } },
       ]);
 
-      const result = await repository.findByLocation("São Paulo - SP");
+      const location: StoreLocation = { name: "Store A", city: "São Paulo" };
+      const result = await repository.findByLocation(location);
 
-      expect(result).toHaveLength(2);
-      expect(result.every((store) => store.location === "São Paulo - SP")).toBe(
-        true,
-      );
+      expect(result).toHaveLength(1);
+      expect(result[0]!.location).toEqual({ name: "Store A", city: "São Paulo" });
     });
 
     it("should return empty array when no matches", async () => {
       await db.collection("stores").insertOne({
-        location: "São Paulo - SP",
+        location: { name: "Store A", city: "São Paulo" },
       });
 
-      const result = await repository.findByLocation("Rio de Janeiro - RJ");
+      const location: StoreLocation = { name: "Store B", city: "Rio de Janeiro" };
+      const result = await repository.findByLocation(location);
 
       expect(result).toHaveLength(0);
     });
@@ -82,8 +83,8 @@ describe("MongoStoreRepository", () => {
   describe("findAll", () => {
     it("should return all stores", async () => {
       await db.collection("stores").insertMany([
-        { location: "São Paulo - SP" },
-        { location: "Rio de Janeiro - RJ" },
+        { location: { name: "Store A", city: "São Paulo" } },
+        { location: { name: "Store B", city: "Rio de Janeiro" } },
       ]);
 
       const result = await repository.findAll();
@@ -94,14 +95,15 @@ describe("MongoStoreRepository", () => {
 
   describe("create", () => {
     it("should insert and return store", async () => {
-      const result = await repository.create({ location: "São Paulo - SP" });
+      const location: StoreLocation = { name: "Store A", city: "São Paulo" };
+      const result = await repository.create({ location });
 
-      expect(result.location).toBe("São Paulo - SP");
+      expect(result.location).toEqual({ name: "Store A", city: "São Paulo" });
       expect(result.id).toBeDefined();
 
       const doc = await db
         .collection("stores")
-        .findOne({ _id: new (await import("mongodb")).ObjectId(result.id) });
+        .findOne({ _id: new ObjectId(result.id) });
       expect(doc).not.toBeNull();
     });
   });
@@ -109,24 +111,26 @@ describe("MongoStoreRepository", () => {
   describe("updateLocation", () => {
     it("should update and return store", async () => {
       const insertResult = await db.collection("stores").insertOne({
-        location: "São Paulo - SP",
+        location: { name: "Store A", city: "São Paulo" },
       });
       const id = insertResult.insertedId.toHexString();
 
-      const result = await repository.updateLocation(id, "Rio de Janeiro - RJ");
+      const newLocation: StoreLocation = { name: "Store B", city: "Rio de Janeiro" };
+      const result = await repository.updateLocation(id, newLocation);
 
       expect(result.id).toBe(id);
-      expect(result.location).toBe("Rio de Janeiro - RJ");
+      expect(result.location).toEqual({ name: "Store B", city: "Rio de Janeiro" });
 
       const doc = await db
         .collection("stores")
-        .findOne({ _id: new (await import("mongodb")).ObjectId(id) });
-      expect(doc?.location).toBe("Rio de Janeiro - RJ");
+        .findOne({ _id: new ObjectId(id) });
+      expect(doc?.location).toEqual({ name: "Store B", city: "Rio de Janeiro" });
     });
 
     it("should throw StoreNotFoundError when not found", async () => {
+      const location: StoreLocation = { name: "Store B", city: "Rio de Janeiro" };
       await expect(
-        repository.updateLocation(DUMMY_STORE_ID, "Rio de Janeiro - RJ"),
+        repository.updateLocation(DUMMY_STORE_ID, location),
       ).rejects.toThrow(StoreNotFoundError);
     });
   });
@@ -134,7 +138,7 @@ describe("MongoStoreRepository", () => {
   describe("delete", () => {
     it("should delete store successfully", async () => {
       const insertResult = await db.collection("stores").insertOne({
-        location: "São Paulo - SP",
+        location: { name: "Store A", city: "São Paulo" },
       });
       const id = insertResult.insertedId.toHexString();
 
@@ -142,7 +146,7 @@ describe("MongoStoreRepository", () => {
 
       const doc = await db
         .collection("stores")
-        .findOne({ _id: new (await import("mongodb")).ObjectId(id) });
+        .findOne({ _id: new ObjectId(id) });
       expect(doc).toBeNull();
     });
 

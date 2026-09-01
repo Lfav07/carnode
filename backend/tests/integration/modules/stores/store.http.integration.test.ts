@@ -99,21 +99,41 @@ describe("Store HTTP integration tests", () => {
       const response = await supertest(app)
         .post("/stores")
         .set("x-test-token", "admin")
-        .send({ location: "Rome" });
+        .send({ location: { name: "Store A", city: "Rome" } });
 
       expect(response.status).toBe(201);
       expect(response.body).toMatchObject({
         id: expect.stringMatching(/^[0-9a-f]{24}$/),
-        location: "Rome",
+        location: { name: "Store A", city: "Rome" },
       });
       expect(response.headers["location"]).toContain("/stores/");
     });
 
-    it("H2: should return 400 for validation error (empty location)", async () => {
+    it("H2: should return 400 for validation error (empty location name)", async () => {
       const response = await supertest(app)
         .post("/stores")
         .set("x-test-token", "admin")
-        .send({ location: "" });
+        .send({ location: { name: "", city: "Rome" } });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("Invalid request body");
+    });
+
+    it("H2b: should return 400 for validation error (empty location city)", async () => {
+      const response = await supertest(app)
+        .post("/stores")
+        .set("x-test-token", "admin")
+        .send({ location: { name: "Store A", city: "" } });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("Invalid request body");
+    });
+
+    it("H2c: should return 400 for validation error (string location)", async () => {
+      const response = await supertest(app)
+        .post("/stores")
+        .set("x-test-token", "admin")
+        .send({ location: "Rome" });
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Invalid request body");
@@ -123,7 +143,7 @@ describe("Store HTTP integration tests", () => {
       const response = await supertest(app)
         .post("/stores")
         .set("x-test-token", "user")
-        .send({ location: "Rome" });
+        .send({ location: { name: "Store A", city: "Rome" } });
 
       expect(response.status).toBe(403);
       expect(response.body.message).toBe("Forbidden");
@@ -132,7 +152,7 @@ describe("Store HTTP integration tests", () => {
     it("H4: should return 401 for unauthenticated request", async () => {
       const response = await supertest(app)
         .post("/stores")
-        .send({ location: "Rome" });
+        .send({ location: { name: "Store A", city: "Rome" } });
 
       expect(response.status).toBe(401);
     });
@@ -140,7 +160,9 @@ describe("Store HTTP integration tests", () => {
 
   describe("GET /stores/:id", () => {
     it("H5: should get store by id (admin)", async () => {
-      const seeded = await seedStore(db, { location: "Rome" });
+      const seeded = await seedStore(db, {
+        location: { name: "Store A", city: "Rome" },
+      });
 
       const response = await supertest(app)
         .get(`/stores/${seeded.id}`)
@@ -149,7 +171,7 @@ describe("Store HTTP integration tests", () => {
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
         id: seeded.id,
-        location: "Rome",
+        location: { name: "Store A", city: "Rome" },
       });
     });
 
@@ -175,8 +197,8 @@ describe("Store HTTP integration tests", () => {
   describe("GET /stores", () => {
     it("H8: should list all stores (admin)", async () => {
       await seedStores(db, [
-        { location: "Rome" },
-        { location: "Milan" },
+        { location: { name: "Store A", city: "Rome" } },
+        { location: { name: "Store B", city: "Milan" } },
       ]);
 
       const response = await supertest(app)
@@ -189,8 +211,8 @@ describe("Store HTTP integration tests", () => {
 
     it("H9: should list all stores (user role allowed)", async () => {
       await seedStores(db, [
-        { location: "Rome" },
-        { location: "Milan" },
+        { location: { name: "Store A", city: "Rome" } },
+        { location: { name: "Store B", city: "Milan" } },
       ]);
 
       const response = await supertest(app)
@@ -203,27 +225,42 @@ describe("Store HTTP integration tests", () => {
 
     it("H10: should filter stores by location", async () => {
       await seedStores(db, [
-        { location: "Rome" },
-        { location: "Rome" },
-        { location: "Milan" },
+        { location: { name: "Store A", city: "Rome" } },
+        { location: { name: "Store B", city: "Rome" } },
+        { location: { name: "Store C", city: "Milan" } },
       ]);
 
       const response = await supertest(app)
-        .get("/stores?location=Rome")
+        .get("/stores?location.city=Rome")
         .set("x-test-token", "admin");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(2);
       expect(
         response.body.every(
-          (store: { location: string }) => store.location === "Rome",
+          (store: { location: { name: string; city: string } }) => store.location.city === "Rome",
         ),
       ).toBe(true);
     });
 
+    it("H10b: should filter stores by location name", async () => {
+      await seedStores(db, [
+        { location: { name: "Store A", city: "Rome" } },
+        { location: { name: "Store B", city: "Milan" } },
+      ]);
+
+      const response = await supertest(app)
+        .get("/stores?location.name=Store%20A")
+        .set("x-test-token", "admin");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0].location.name).toBe("Store A");
+    });
+
     it("H11: should return 400 for empty location query", async () => {
       const response = await supertest(app)
-        .get("/stores?location=")
+        .get("/stores?location.city=")
         .set("x-test-token", "admin");
 
       expect(response.status).toBe(400);
@@ -232,17 +269,19 @@ describe("Store HTTP integration tests", () => {
 
   describe("PATCH /stores/:id", () => {
     it("H12: should update location (admin)", async () => {
-      const seeded = await seedStore(db, { location: "Rome" });
+      const seeded = await seedStore(db, {
+        location: { name: "Store A", city: "Rome" },
+      });
 
       const response = await supertest(app)
         .patch(`/stores/${seeded.id}`)
         .set("x-test-token", "admin")
-        .send({ location: "Milan" });
+        .send({ location: { name: "Store B", city: "Milan" } });
 
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
         id: seeded.id,
-        location: "Milan",
+        location: { name: "Store B", city: "Milan" },
       });
     });
 
@@ -252,29 +291,46 @@ describe("Store HTTP integration tests", () => {
       const response = await supertest(app)
         .patch(`/stores/${nonexistentId}`)
         .set("x-test-token", "admin")
-        .send({ location: "Milan" });
+        .send({ location: { name: "Store B", city: "Milan" } });
 
       expect(response.status).toBe(404);
     });
 
-    it("H14: should return 400 for validation error (empty body)", async () => {
-      const seeded = await seedStore(db, { location: "Rome" });
+    it("H14: should return 400 for validation error (empty location name)", async () => {
+      const seeded = await seedStore(db, {
+        location: { name: "Store A", city: "Rome" },
+      });
 
       const response = await supertest(app)
         .patch(`/stores/${seeded.id}`)
         .set("x-test-token", "admin")
-        .send({ location: "" });
+        .send({ location: { name: "", city: "Milan" } });
+
+      expect(response.status).toBe(400);
+    });
+
+    it("H14b: should return 400 for validation error (string location)", async () => {
+      const seeded = await seedStore(db, {
+        location: { name: "Store A", city: "Rome" },
+      });
+
+      const response = await supertest(app)
+        .patch(`/stores/${seeded.id}`)
+        .set("x-test-token", "admin")
+        .send({ location: "Milan" });
 
       expect(response.status).toBe(400);
     });
 
     it("H15: should return 403 for non-admin user", async () => {
-      const seeded = await seedStore(db, { location: "Rome" });
+      const seeded = await seedStore(db, {
+        location: { name: "Store A", city: "Rome" },
+      });
 
       const response = await supertest(app)
         .patch(`/stores/${seeded.id}`)
         .set("x-test-token", "user")
-        .send({ location: "Milan" });
+        .send({ location: { name: "Store B", city: "Milan" } });
 
       expect(response.status).toBe(403);
       expect(response.body.message).toBe("Forbidden");
@@ -283,7 +339,9 @@ describe("Store HTTP integration tests", () => {
 
   describe("DELETE /stores/:id", () => {
     it("H16: should delete store (admin)", async () => {
-      const seeded = await seedStore(db, { location: "Rome" });
+      const seeded = await seedStore(db, {
+        location: { name: "Store A", city: "Rome" },
+      });
 
       const response = await supertest(app)
         .delete(`/stores/${seeded.id}`)
@@ -303,7 +361,9 @@ describe("Store HTTP integration tests", () => {
     });
 
     it("H18: should return 403 for non-admin user", async () => {
-      const seeded = await seedStore(db, { location: "Rome" });
+      const seeded = await seedStore(db, {
+        location: { name: "Store A", city: "Rome" },
+      });
 
       const response = await supertest(app)
         .delete(`/stores/${seeded.id}`)

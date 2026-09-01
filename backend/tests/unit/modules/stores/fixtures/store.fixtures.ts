@@ -4,25 +4,25 @@ import type { StoreDocument } from "../../../../../src/modules/stores/infrastruc
 
 export const DUMMY_STORE: Store = {
   id: "507f1f77bcf86cd799439011",
-  location: "São Paulo - SP",
+  location: { name: "Store A", city: "São Paulo" },
 };
 
 export const DUMMY_STORE_RESPONSE: StoreResponseDto = {
   id: "507f1f77bcf86cd799439011",
-  location: "São Paulo - SP",
+  location: { name: "Store A", city: "São Paulo" },
 };
 
 export const DUMMY_STORE_DOCUMENT: StoreDocument = {
   _id: {
     toHexString: () => "507f1f77bcf86cd799439011",
   } as unknown as import("mongodb").ObjectId,
-  location: "São Paulo - SP",
+  location: { name: "Store A", city: "São Paulo" },
 };
 
 export const DUMMY_STORES: Store[] = [
   DUMMY_STORE,
   {
     id: "507f1f77bcf86cd799439012",
-    location: "Rio de Janeiro - RJ",
+    location: { name: "Store B", city: "Rio de Janeiro" },
   },
 ];

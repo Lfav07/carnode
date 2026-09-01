@@ -29,6 +29,10 @@ export async function clearTestDatabase() {
 }
 
 export async function disconnectTestDatabase() {
-  await client.close();
+  try {
+    await client.close();
+  } catch {
+    await client.close(true);
+  }
   await mongoServer.stop();
 }

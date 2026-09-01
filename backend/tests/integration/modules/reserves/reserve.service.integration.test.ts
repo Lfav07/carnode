@@ -45,7 +45,7 @@ const testCars: CarResponseDto[] = TEST_CARS.map((c) => ({
 
 const testStores: StoreResponseDto[] = TEST_STORES.map((s) => ({
   id: s.id,
-  location: s.location,
+  location: { name: s.location.name, city: s.location.city },
 }));
 
 describe("ReservesService integration tests", () => {

@@ -1,4 +1,6 @@
+import type { StoreLocation } from "./StoreLocation.js";
+
 export interface Store {
-  id: string;
-  location: string;
+  readonly id: string;
+  readonly location: StoreLocation;
 }

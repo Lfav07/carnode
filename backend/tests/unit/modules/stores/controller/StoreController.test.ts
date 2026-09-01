@@ -44,7 +44,7 @@ describe("StoreController", () => {
       const res = createMockRes();
       const store = {
         id: "507f1f77bcf86cd799439011",
-        location: "São Paulo - SP",
+        location: { name: "Store A", city: "São Paulo" },
       };
       storeService.getStoreById.mockResolvedValue(store);
 
@@ -58,32 +58,54 @@ describe("StoreController", () => {
   });
 
   describe("getStores", () => {
-    it("should return stores with 200", async () => {
+    it("should return stores with 200 when location filter provided", async () => {
       const req = createMockReq({
-        validatedQuery: { location: "São Paulo - SP" },
+        validatedQuery: {
+          "location.name": "Store A",
+          "location.city": "São Paulo",
+        },
       });
       const res = createMockRes();
       const stores = [
-        { id: "507f1f77bcf86cd799439011", location: "São Paulo - SP" },
+        { id: "507f1f77bcf86cd799439011", location: { name: "Store A", city: "São Paulo" } },
       ];
       storeService.getStores.mockResolvedValue(stores);
 
       await controller.getStores(req, res);
 
       expect(res.json).toHaveBeenCalledWith(stores);
-      expect(storeService.getStores).toHaveBeenCalledWith("São Paulo - SP");
+      expect(storeService.getStores).toHaveBeenCalledWith({
+        name: "Store A",
+        city: "São Paulo",
+      });
+    });
+
+    it("should return stores with 200 when no filter provided", async () => {
+      const req = createMockReq({
+        validatedQuery: {},
+      });
+      const res = createMockRes();
+      const stores = [
+        { id: "507f1f77bcf86cd799439011", location: { name: "Store A", city: "São Paulo" } },
+      ];
+      storeService.getStores.mockResolvedValue(stores);
+
+      await controller.getStores(req, res);
+
+      expect(res.json).toHaveBeenCalledWith(stores);
+      expect(storeService.getStores).toHaveBeenCalledWith(undefined);
     });
   });
 
   describe("createStore", () => {
     it("should return 201 with Location header", async () => {
       const req = createMockReq({
-        body: { location: "São Paulo - SP" },
+        body: { location: { name: "Store A", city: "São Paulo" } },
       });
       const res = createMockRes();
       const store = {
         id: "507f1f77bcf86cd799439011",
-        location: "São Paulo - SP",
+        location: { name: "Store A", city: "São Paulo" },
       };
       storeService.createStore.mockResolvedValue(store);
 
@@ -95,7 +117,10 @@ describe("StoreController", () => {
         "/api/v1/stores/507f1f77bcf86cd799439011",
       );
       expect(res.json).toHaveBeenCalledWith(store);
-      expect(storeService.createStore).toHaveBeenCalledWith("São Paulo - SP");
+      expect(storeService.createStore).toHaveBeenCalledWith({
+        name: "Store A",
+        city: "São Paulo",
+      });
     });
   });
 
@@ -103,12 +128,12 @@ describe("StoreController", () => {
     it("should return updated store with 200", async () => {
       const req = createMockReq({
         params: { id: "507f1f77bcf86cd799439011" },
-        body: { location: "Rio de Janeiro - RJ" },
+        body: { location: { name: "Store B", city: "Rio de Janeiro" } },
       });
       const res = createMockRes();
       const store = {
         id: "507f1f77bcf86cd799439011",
-        location: "Rio de Janeiro - RJ",
+        location: { name: "Store B", city: "Rio de Janeiro" },
       };
       storeService.updateStoreLocation.mockResolvedValue(store);
 
@@ -117,7 +142,7 @@ describe("StoreController", () => {
       expect(res.json).toHaveBeenCalledWith(store);
       expect(storeService.updateStoreLocation).toHaveBeenCalledWith(
         "507f1f77bcf86cd799439011",
-        "Rio de Janeiro - RJ",
+        { name: "Store B", city: "Rio de Janeiro" },
       );
     });
   });

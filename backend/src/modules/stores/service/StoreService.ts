@@ -1,5 +1,6 @@
 import type { StoreRepository } from "../domain/StoreRepository.js";
 import type { StoreResponseDto } from "../dto/response/StoreResponseDto.js";
+import type { StoreLocation } from "../domain/StoreLocation.js";
 import { StoreResponseMapper } from "../dto/response/StoreResponseMapper.js";
 import { StoreNotFoundError } from "../domain/errors/StoreNotFoundError.js";
 
@@ -22,7 +23,7 @@ export class StoreService {
     return StoreResponseMapper.toResponse(store);
   }
 
-  async getStores(location?: string): Promise<StoreResponseDto[]> {
+  async getStores(location?: StoreLocation): Promise<StoreResponseDto[]> {
     const stores = location
       ? await this.storeRepository.findByLocation(location)
       : await this.storeRepository.findAll();
@@ -30,7 +31,7 @@ export class StoreService {
     return stores.map((store) => StoreResponseMapper.toResponse(store));
   }
 
-  async createStore(location: string): Promise<StoreResponseDto> {
+  async createStore(location: StoreLocation): Promise<StoreResponseDto> {
     const store = await this.storeRepository.create({ location });
 
     return StoreResponseMapper.toResponse(store);
@@ -38,7 +39,7 @@ export class StoreService {
 
   async updateStoreLocation(
     id: string,
-    location: string,
+    location: StoreLocation,
   ): Promise<StoreResponseDto> {
     await this.findStoreOrThrow(id);
 

@@ -20,12 +20,12 @@ export async function seedStore(
   input: CreateStoreFixtureInput,
 ): Promise<Store> {
   const result = await db.collection("stores").insertOne({
-    location: input.location,
+    location: { name: input.location.name, city: input.location.city },
   });
 
   return {
     id: result.insertedId.toHexString(),
-    location: input.location,
+    location: { name: input.location.name, city: input.location.city },
   };
 }
 
@@ -57,6 +57,9 @@ export async function findStoreByIdFromDb(
 
   return {
     id: doc._id.toHexString(),
-    location: doc.location as string,
+    location: {
+      name: (doc.location as { name: string; city: string }).name,
+      city: (doc.location as { name: string; city: string }).city,
+    },
   };
 }

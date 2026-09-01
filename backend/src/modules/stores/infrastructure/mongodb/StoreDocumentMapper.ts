@@ -6,13 +6,19 @@ export class StoreDocumentMapper {
   static toDomain(doc: StoreDocument): Store {
     return {
       id: doc._id?.toHexString() ?? "",
-      location: doc.location,
+      location: {
+        name: doc.location.name,
+        city: doc.location.city,
+      },
     };
   }
 
   static toDocumentFromInput(input: CreateStoreInput): StoreDocument {
     return {
-      location: input.location,
+      location: {
+        name: input.location.name,
+        city: input.location.city,
+      },
     };
   }
 }
