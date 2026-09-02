@@ -18,10 +18,11 @@ const links = [
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b bg-linear-to-r from-[#f79d00] to-[#64f38c] backdrop-blur-sm">
-      <div className="mx-auto flex justify-between gap-12 h-14 max-w-7xl items-center px-4">
-        <NavLink to="/" className="mr-6  text-lg font-bold">
-          Carnode
+    <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0c0c14]/80 backdrop-blur-xl">
+      <div className="accent-line absolute right-0 bottom-0 left-0" />
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        <NavLink to="/" className="mr-6 font-heading text-lg font-bold tracking-tight">
+          <span className="text-gradient">Carnode</span>
         </NavLink>
         <NavigationMenu>
           <NavigationMenuList>
@@ -32,7 +33,11 @@ export function Header() {
                     <NavLink
                       to={link.to}
                       className={({ isActive }) =>
-                        cn(navigationMenuTriggerStyle(), isActive && "bg-muted")
+                        cn(
+                          navigationMenuTriggerStyle(),
+                          isActive && "bg-white/[0.06] text-foreground",
+                          "text-muted-foreground hover:text-foreground",
+                        )
                       }
                     />
                   }
