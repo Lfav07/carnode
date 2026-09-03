@@ -31,8 +31,6 @@ export function carRoutes(controller: CarController): Router {
 
   router.get(
     "/",
-    authenticate(),
-    authorize(ROLES.ADMIN, ROLES.USER),
     validateQueryParams(carQuerySchema),
     async (req: Request, res: Response) => controller.listCars(req, res),
   );

@@ -1,5 +1,6 @@
 import express from "express";
 import type { Db } from "mongodb";
+import cors from "cors"
 import { makeUserModule } from "./modules/users/container.js";
 import { makeCarModule } from "./modules/cars/container.js";
 import { makeStoreModule } from "./modules/stores/container.js";
@@ -17,6 +18,7 @@ export class App {
 
   private configureMiddleware() {
     this.app.use(express.json());
+    this.app.use(cors());
   }
 
   private configureRoutes() {
