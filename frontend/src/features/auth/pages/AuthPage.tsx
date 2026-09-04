@@ -115,11 +115,7 @@ export function AuthPage() {
                       {name}
                     </p>
                   )}
-                  {email && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {email}
-                    </p>
-                  )}
+
                 </div>
               </div>
 
