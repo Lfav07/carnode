@@ -14,7 +14,9 @@ function buildUrl(
   path: string,
   params?: Record<string, string | number | boolean | undefined | null>,
 ): string {
-  const url = new URL(path, base);
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
+  const url = new URL(normalizedPath, normalizedBase);
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
