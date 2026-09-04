@@ -27,8 +27,6 @@ export function storeRoutes(controller: StoreController): Router {
 
   router.get(
     "/",
-    authenticate(),
-    authorize(ROLES.ADMIN, ROLES.USER),
     validateQueryParams(storeQuerySchema),
     async (req: Request, res: Response) => controller.getStores(req, res),
   );
