@@ -1,4 +1,5 @@
 import { createApiClient } from "@/shared/api";
+import { keycloak } from "@/features/auth/keycloak";
 import type { CarQueryParams } from "../schemas/carsSchema";
 import type {
   CarCreateRequest,
@@ -11,6 +12,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = createApiClient({
   baseUrl: `${API_BASE_URL}/cars`,
+  getToken: () => keycloak.token,
 });
 
 export async function getCars(params?: CarQueryParams) {

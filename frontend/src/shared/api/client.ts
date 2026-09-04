@@ -41,6 +41,7 @@ function serializeBody(body: unknown): string | FormData | undefined {
 
 export interface ApiClientConfig {
   baseUrl: string;
+  getToken?: () => string | undefined;
   interceptors?: Partial<Interceptors>;
 }
 
@@ -56,6 +57,8 @@ export function createApiClient(config: ApiClientConfig) {
   ): Promise<T> {
     const { params, timeout, headers: customHeaders, ...init } = options;
 
+    const token = config.getToken?.();
+
     let requestConfig: RequestConfig = {
       ...init,
       params,
@@ -64,6 +67,7 @@ export function createApiClient(config: ApiClientConfig) {
         "Content-Type": "application/json",
         Accept: "application/json",
         ...customHeaders,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     };
 
@@ -96,8 +100,8 @@ export function createApiClient(config: ApiClientConfig) {
         finalResponse = await interceptor.onFulfilled(finalResponse);
       }
 
-      // Handle no-content responses
-      if (finalResponse.status === 204) {
+      // Handle no-content & created responses
+      if (finalResponse.status === 204 || finalResponse.status === 201) {
         return undefined as T;
       }
 

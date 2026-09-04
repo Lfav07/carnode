@@ -1,4 +1,5 @@
 import { createApiClient } from "@/shared/api";
+import { keycloak } from "@/features/auth/keycloak";
 import type {
   ReserveStatusUpdateRequest,
   UserReserveCreateRequest,
@@ -9,6 +10,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = createApiClient({
   baseUrl: `${API_BASE_URL}/reserves`,
+  getToken: () => keycloak.token,
 });
 
 export async function getCurrentUserReserves() {

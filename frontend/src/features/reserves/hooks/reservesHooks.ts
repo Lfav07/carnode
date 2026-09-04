@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/features/auth/AuthProvider";
 import {
   getCurrentUserReserves,
   createUserReserve,
@@ -8,9 +9,12 @@ import {
 import type { UserReserveCreateRequest } from "../types";
 
 export function useReserves() {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return useQuery({
     queryKey: ["reserves", "user", "me"],
     queryFn: getCurrentUserReserves,
+    enabled: isAuthenticated && !isLoading,
   });
 }
 
@@ -26,10 +30,12 @@ export function useCreateReserve() {
 }
 
 export function useReserve(id: string) {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return useQuery({
     queryKey: ["reserves", "user", id],
     queryFn: () => getReserveById(id),
-    enabled: !!id,
+    enabled: !!id && isAuthenticated && !isLoading,
   });
 }
 

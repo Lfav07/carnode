@@ -10,6 +10,8 @@ import { CarsPage } from "@/features/cars/pages/CarsPage";
 import { StoresPage } from "@/features/stores/pages/StoresPage";
 import { ReservesPage } from "@/features/reserves/pages/ReservesPage";
 import { AuthPage } from "@/features/auth/pages/AuthPage";
+import { RegisterPage } from "@/features/auth/pages/RegisterPage";
+import { AuthProvider } from "./features/auth/AuthProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,14 +33,17 @@ const router = createBrowserRouter([
       { path: "/stores", element: <StoresPage /> },
       { path: "/reserves", element: <ReservesPage /> },
       { path: "/auth", element: <AuthPage /> },
+      { path: "/register", element: <RegisterPage /> },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+      <AuthProvider>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
+    </AuthProvider>
   </StrictMode>,
 );
