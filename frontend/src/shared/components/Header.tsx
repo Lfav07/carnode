@@ -24,8 +24,13 @@ const authLinks = [
 ];
 
 export function Header() {
-  const { isAuthenticated, isLoading, logout } = useAuth();
-  const links = isAuthenticated ? authLinks : publicLinks;
+  const { isAuthenticated, isLoading, logout, hasRole } = useAuth();
+  const links = isAuthenticated
+    ? [
+        ...authLinks,
+        ...(hasRole("admin") ? [{ to: "/admin", label: "Admin" }] : []),
+      ]
+    : publicLinks;
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0c0c14]/80 backdrop-blur-xl">
