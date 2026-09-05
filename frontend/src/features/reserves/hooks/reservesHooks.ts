@@ -5,6 +5,7 @@ import {
   createUserReserve,
   getReserveById,
   cancelReserve,
+  getAvailableCars,
 } from "../api/reservesApi";
 import type { UserReserveCreateRequest } from "../types";
 
@@ -48,5 +49,16 @@ export function useCancelReserve() {
       queryClient.invalidateQueries({ queryKey: ["reserves", "user"] });
       queryClient.invalidateQueries({ queryKey: ["reserves", "user", variables] });
     },
+  });
+}
+
+export function useAvailableCars(params: {
+  pickupDate: string;
+  returnDate: string;
+} | null) {
+  return useQuery({
+    queryKey: ["reserves", "user", "available-cars", params],
+    queryFn: () => getAvailableCars(params!),
+    enabled: !!params,
   });
 }

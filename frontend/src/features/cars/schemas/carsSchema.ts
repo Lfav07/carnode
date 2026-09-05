@@ -55,6 +55,8 @@ export const carQuerySchema = z.object({
 
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 
+  id: z.string().min(24).max(24).optional(),
+
   brand: z.enum(CAR_BRANDS).optional(),
 
   category: z.enum(CAR_CATEGORIES).optional(),

@@ -13,3 +13,7 @@ const api = createApiClient({
 export async function getStores(params?: StoreQueryParams) {
   return api.get<StoreResponse[]>("", { params });
 }
+
+export async function searchStores(term: string) {
+  return api.get<StoreResponse[]>("/search", { params: { q: term } });
+}

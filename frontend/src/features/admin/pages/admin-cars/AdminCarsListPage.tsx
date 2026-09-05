@@ -17,6 +17,12 @@ import type { CarBrand, CarCategory, CarStatus, CarResponse } from "@/features/c
 
 const filterFields = [
   {
+    key: "id",
+    label: "Car ID",
+    type: "text" as const,
+    placeholder: "Search by ID (24 chars)",
+  },
+  {
     key: "brand",
     label: "Brand",
     type: "select" as const,
@@ -46,6 +52,7 @@ export function AdminCarsListPage() {
   const deleteCar = useDeleteCar();
 
   const currentPage = Number(searchParams.get("page")) || 1;
+  const idRaw = searchParams.get("id") ?? undefined;
   const brandRaw = searchParams.get("brand") ?? undefined;
   const categoryRaw = searchParams.get("category") ?? undefined;
   const statusRaw = searchParams.get("status") ?? undefined;
@@ -69,6 +76,7 @@ export function AdminCarsListPage() {
     limit: pageSize,
     sortBy: "createdAt",
     sortOrder: "desc",
+    id: idRaw,
     brand,
     category,
     status,
@@ -93,6 +101,7 @@ export function AdminCarsListPage() {
   function handleResetFilters() {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
+      next.delete("id");
       next.delete("brand");
       next.delete("category");
       next.delete("status");
@@ -119,6 +128,7 @@ export function AdminCarsListPage() {
   }
 
   const filterValues = {
+    id: idRaw ?? "",
     brand: brandRaw ?? "",
     category: categoryRaw ?? "",
     status: statusRaw ?? "",

@@ -5,6 +5,7 @@ import type {
   UserReserveCreateRequest,
   UserReserveResponse,
 } from "../types";
+import type { CarUserResponse } from "@/features/cars/types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -29,4 +30,11 @@ export async function cancelReserve(id: string) {
   return api.patch<UserReserveResponse>(`/${id}/status`, {
     status: "CANCELLED",
   } satisfies ReserveStatusUpdateRequest);
+}
+
+export async function getAvailableCars(params: {
+  pickupDate: string;
+  returnDate: string;
+}) {
+  return api.get<CarUserResponse[]>("/available-cars", { params });
 }

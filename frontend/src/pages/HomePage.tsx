@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import {
-  MapPin,
-  Calendar,
-  Clock,
   ArrowRight,
   Shield,
   Zap,
@@ -14,6 +11,7 @@ import {
   Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SearchBookingForm } from "@/features/home/components/SearchBookingForm";
 
 /* ------------------------------------------------------------------ */
 /*  Scroll-reveal hook                                                 */
@@ -106,31 +104,10 @@ const carGroups = [
   },
 ] as const;
 
-const timeSlots = [
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-  "19:00",
-  "20:00",
-];
-
 /* ------------------------------------------------------------------ */
 /*  HomePage                                                           */
 /* ------------------------------------------------------------------ */
 export function HomePage() {
-  const navigate = useNavigate();
-  const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-
   const heroRef = useRef<HTMLDivElement>(null);
   const { ref: benefitsRef, visible: benefitsVisible } = useReveal();
   const { ref: carsRef, visible: carsVisible } = useReveal();
@@ -151,13 +128,6 @@ export function HomePage() {
     window.addEventListener("mousemove", handler);
     return () => window.removeEventListener("mousemove", handler);
   }, []);
-
-  function handleSearch() {
-    if (!location || !date || !time) return;
-    navigate(
-      `/cars?location=${encodeURIComponent(location)}&date=${date}&time=${time}`,
-    );
-  }
 
   return (
     <div className="flex flex-col">
@@ -194,66 +164,7 @@ export function HomePage() {
 
         {/* ---- Search Panel ---- */}
         <div className="reveal reveal-delay-3 relative z-10 mt-14 w-full max-w-3xl">
-          <div className="glass hover-glow rounded-2xl p-2 shadow-2xl shadow-black/20">
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
-              {/* Location */}
-              <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3.5 transition-colors focus-within:bg-white/[0.06] focus-within:ring-1 focus-within:ring-[#f79d00]/30">
-                <MapPin className="h-4 w-4 shrink-0 text-[#f79d00]" />
-                <input
-                  type="text"
-                  placeholder="Where do you want to pick up?"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                />
-              </div>
-
-              {/* Date */}
-              <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3.5 transition-colors focus-within:bg-white/[0.06] focus-within:ring-1 focus-within:ring-[#f79d00]/30">
-                <Calendar className="h-4 w-4 shrink-0 text-[#64f38c]" />
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-transparent text-sm text-foreground focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
-                />
-              </div>
-
-              {/* Time */}
-              <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3.5 transition-colors focus-within:bg-white/[0.06] focus-within:ring-1 focus-within:ring-[#f79d00]/30">
-                <Clock className="h-4 w-4 shrink-0 text-[#64f38c]" />
-                <select
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  className="w-full appearance-none bg-transparent text-sm text-foreground focus:outline-none"
-                >
-                  <option value="" className="bg-[#14141f]">
-                    Pickup time
-                  </option>
-                  {timeSlots.map((t) => (
-                    <option key={t} value={t} className="bg-[#14141f]">
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Search Button */}
-              <button
-                onClick={handleSearch}
-                disabled={!location || !date || !time}
-                className={cn(
-                  "flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-heading text-sm font-semibold transition-all duration-300",
-                  location && date && time
-                    ? "bg-gradient-to-r from-[#f79d00] to-[#64f38c] text-[#0c0c14] shadow-lg shadow-[#f79d00]/20 hover:shadow-xl hover:shadow-[#f79d00]/30 hover:brightness-110"
-                    : "cursor-not-allowed bg-white/[0.05] text-muted-foreground/40",
-                )}
-              >
-                Search Cars
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          <SearchBookingForm />
         </div>
       </section>
 

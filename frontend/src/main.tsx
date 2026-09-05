@@ -7,6 +7,7 @@ import "./App.css";
 import { AppLayout } from "@/app/layout/AppLayout";
 import { HomePage } from "@/pages/HomePage";
 import { CarsPage } from "@/features/cars/pages/CarsPage";
+import { AvailableCarsPage } from "@/features/cars/pages/AvailableCarsPage";
 import { StoresPage } from "@/features/stores/pages/StoresPage";
 import { ReservesPage } from "@/features/reserves/pages/ReservesPage";
 import { AuthPage } from "@/features/auth/pages/AuthPage";
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <HomePage /> },
       { path: "/cars", element: <CarsPage /> },
+      { path: "/available-cars", element: <AvailableCarsPage /> },
       { path: "/stores", element: <StoresPage /> },
       { path: "/reserves", element: <ReservesPage /> },
       { path: "/auth", element: <AuthPage /> },
