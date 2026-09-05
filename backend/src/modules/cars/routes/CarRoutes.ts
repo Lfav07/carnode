@@ -32,7 +32,15 @@ export function carRoutes(controller: CarController): Router {
   router.get(
     "/",
     validateQueryParams(carQuerySchema),
-    async (req: Request, res: Response) => controller.listCars(req, res),
+    async (req: Request, res: Response) => controller.listPublicCars(req, res),
+  );
+
+  router.get(
+    "/admin",
+    authenticate(),
+    authorize(ROLES.ADMIN),
+    validateQueryParams(carQuerySchema),
+    async (req: Request, res: Response) => controller.listAdminCars(req, res),
   );
 
   router.get(

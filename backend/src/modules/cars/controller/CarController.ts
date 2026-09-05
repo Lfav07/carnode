@@ -27,9 +27,8 @@ export class CarController {
     return res.json(car);
   }
 
-  async listCars(req: Request, res: Response): Promise<Response> {
+  async listPublicCars(req: Request, res: Response): Promise<Response> {
     const query = getValidatedQuery<CarQueryParams>(req);
-    const isAdmin = req.user?.roles.includes(ROLES.ADMIN) ?? false;
 
     const input = {
       page: query.page,
@@ -47,10 +46,30 @@ export class CarController {
       ...(query.plate !== undefined ? { plate: query.plate } : {}),
     };
 
-    const cars = isAdmin
-      ? await this.carService.getCars(input)
-      : await this.carService.userGetCars(input);
+    const cars = await this.carService.userGetCars(input);
+    return res.json(cars);
+  }
 
+  async listAdminCars(req: Request, res: Response): Promise<Response> {
+    const query = getValidatedQuery<CarQueryParams>(req);
+
+    const input = {
+      page: query.page,
+      limit: query.limit,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder,
+      ...(query.brand !== undefined ? { brand: query.brand } : {}),
+      ...(query.category !== undefined ? { category: query.category } : {}),
+      ...(query.status !== undefined ? { status: query.status } : {}),
+      ...(query.model !== undefined ? { model: query.model } : {}),
+      ...(query.year !== undefined ? { year: query.year } : {}),
+      ...(query.minYear !== undefined ? { minYear: query.minYear } : {}),
+      ...(query.maxYear !== undefined ? { maxYear: query.maxYear } : {}),
+      ...(query.dailyRate !== undefined ? { dailyRate: query.dailyRate } : {}),
+      ...(query.plate !== undefined ? { plate: query.plate } : {}),
+    };
+
+    const cars = await this.carService.getCars(input);
     return res.json(cars);
   }
 

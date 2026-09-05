@@ -97,14 +97,13 @@ describe("Car HTTP integration tests", () => {
   });
 
   describe("GET /api/v1/cars", () => {
-    it("should return 200 with paginated cars for admin", async () => {
+    it("should return 200 with UserCarResponseDto for public access", async () => {
       const { carService } = makeCarModule(db);
       await carService.registerCar(buildCarCreateData({ plate: "HTP10T1" }));
       await carService.registerCar(buildCarCreateData({ plate: "HTP20T1" }));
 
       const response = await request(app)
-        .get("/api/v1/cars")
-        .set("Authorization", "Bearer test-token");
+        .get("/api/v1/cars");
 
       expect(response.status).toBe(200);
       expect(response.body.data).toHaveLength(2);
@@ -112,9 +111,9 @@ describe("Car HTTP integration tests", () => {
       expect(response.body.meta.currentPage).toBe(1);
       expect(response.body.meta.totalCount).toBe(2);
       response.body.data.forEach((car: Record<string, unknown>) => {
-        expect(car).toHaveProperty("status");
-        expect(car).toHaveProperty("plate");
-        expect(car).toHaveProperty("createdAt");
+        expect(car).toHaveProperty("availability");
+        expect(car).not.toHaveProperty("status");
+        expect(car).not.toHaveProperty("plate");
       });
     });
 
@@ -136,13 +135,47 @@ describe("Car HTTP integration tests", () => {
         expect(car).not.toHaveProperty("plate");
       });
     });
+  });
 
-    it("should return 401 without auth header", async () => {
+  describe("GET /api/v1/cars/admin", () => {
+    it("should return 200 with full car data for admin", async () => {
+      const { carService } = makeCarModule(db);
+      await carService.registerCar(buildCarCreateData({ plate: "HTP10T1" }));
+      await carService.registerCar(buildCarCreateData({ plate: "HTP20T1" }));
+
+      const response = await request(app)
+        .get("/api/v1/cars/admin")
+        .set("Authorization", "Bearer test-token");
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(2);
+      expect(response.body.meta).toBeDefined();
+      expect(response.body.meta.currentPage).toBe(1);
+      expect(response.body.meta.totalCount).toBe(2);
+      response.body.data.forEach((car: Record<string, unknown>) => {
+        expect(car).toHaveProperty("status");
+        expect(car).toHaveProperty("plate");
+        expect(car).toHaveProperty("createdAt");
+      });
+    });
+
+    it("should return 401 without auth token", async () => {
       shouldRejectAuth = true;
 
-      const response = await request(app).get("/api/v1/cars");
+      const response = await request(app)
+        .get("/api/v1/cars/admin");
 
       expect(response.status).toBe(401);
+    });
+
+    it("should return 403 for user role", async () => {
+      const userApp = createApp({ sub: "user-id", roles: ["user"] });
+
+      const response = await request(userApp)
+        .get("/api/v1/cars/admin")
+        .set("Authorization", "Bearer test-token");
+
+      expect(response.status).toBe(403);
     });
   });
 

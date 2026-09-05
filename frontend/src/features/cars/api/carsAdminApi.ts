@@ -16,7 +16,7 @@ const api = createApiClient({
 });
 
 export async function getCars(params?: CarQueryParams) {
-  return api.paginated<CarResponse>("", { params });
+  return api.paginated<CarResponse>("/admin", { params });
 }
 
 export async function getCarById(id: string) {
