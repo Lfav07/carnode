@@ -1,5 +1,6 @@
 import type { CarAvailabilityService } from "../../../../../src/modules/reserves/domain/ports/CarAvailabilityService.js";
 import type { CarResponseDto } from "../../../../../src/modules/cars/dto/response/CarResponseDto.js";
+import type { UserCarResponseDto } from "../../../../../src/modules/cars/dto/response/UserCarResponseDto.js";
 import type { CarStatus } from "../../../../../src/modules/cars/domain/CarStatus.js";
 
 export interface MockCarAvailabilityServiceState {
@@ -49,6 +50,20 @@ export const createMockCarAvailabilityServiceFactory =
           updateCalls.push({ carId, status });
 
           return updated;
+        },
+
+        async getAllAvailableCars(): Promise<UserCarResponseDto[]> {
+          return Array.from(cars.values())
+            .filter((car) => car.status === "AVAILABLE")
+            .map((car) => ({
+              id: car.id,
+              brand: car.brand,
+              model: car.model,
+              year: car.year,
+              category: car.category,
+              availability: "available" as const,
+              dailyRate: car.dailyRate,
+            }));
         },
       };
     },

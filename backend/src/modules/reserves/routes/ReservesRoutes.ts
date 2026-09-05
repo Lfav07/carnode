@@ -21,6 +21,7 @@ import {
   type UserReserveCreateRequest,
 } from "../schema/userReserveCreateSchema.js";
 import { reserveQuerySchema } from "../schema/ReserveQuerySchema.js";
+import { availableCarsQuerySchema } from "../schema/AvailableCarsQuerySchema.js";
 import {
   authenticate,
   authorize,
@@ -56,6 +57,13 @@ export function reserveRoutes(controller: ReservesController): Router {
     authorize(ROLES.ADMIN),
     validateQueryParams(reserveQuerySchema),
     async (req: Request, res: Response) => controller.getReserves(req, res),
+  );
+
+  router.get(
+    "/available-cars",
+    validateQueryParams(availableCarsQuerySchema),
+    async (req: Request, res: Response) =>
+      controller.getAvailableCars(req, res),
   );
 
   router.get(

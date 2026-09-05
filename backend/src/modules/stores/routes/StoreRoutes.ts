@@ -13,6 +13,7 @@ import {
   type UpdateLocationRequest,
 } from "../schema/UpdateLocationSchema.js";
 import { storeQuerySchema } from "../schema/StoreQuerySchema.js";
+import { storeSearchSchema } from "../schema/StoreSearchSchema.js";
 import {
   authenticate,
   authorize,
@@ -29,6 +30,12 @@ export function storeRoutes(controller: StoreController): Router {
     "/",
     validateQueryParams(storeQuerySchema),
     async (req: Request, res: Response) => controller.getStores(req, res),
+  );
+
+  router.get(
+    "/search",
+    validateQueryParams(storeSearchSchema),
+    async (req: Request, res: Response) => controller.searchStores(req, res),
   );
 
   router.get(

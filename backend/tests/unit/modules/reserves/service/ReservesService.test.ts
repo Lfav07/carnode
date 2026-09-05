@@ -70,6 +70,7 @@ const reserveRepository: Mocked<ReserveRepository> = {
   update: vi.fn(),
   updateStatus: vi.fn(),
   existsOverlappingReservation: vi.fn(),
+  findOverlappingCarIds: vi.fn(),
 };
 
 const userService: Mocked<UserLookupService> = {
@@ -80,6 +81,7 @@ const userService: Mocked<UserLookupService> = {
 const carService: Mocked<CarAvailabilityService> = {
   getCarById: vi.fn(),
   updateCarStatus: vi.fn(),
+  getAllAvailableCars: vi.fn(),
 };
 
 const storeService: Mocked<StoreLookupService> = {

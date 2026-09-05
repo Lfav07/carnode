@@ -11,6 +11,7 @@ import {
 const repository: Mocked<StoreRepository> = {
   findById: vi.fn(),
   findByLocation: vi.fn(),
+  searchByName: vi.fn(),
   findAll: vi.fn(),
   create: vi.fn(),
   updateLocation: vi.fn(),

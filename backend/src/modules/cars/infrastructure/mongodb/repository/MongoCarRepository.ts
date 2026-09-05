@@ -20,10 +20,15 @@ import { CarConflictError } from "../../../domain/errors/CarConflictError.js";
 
 export class MongoCarRepository implements CarRepository {
   private readonly collection: Collection<CarDocument>;
+  private readonly indexesReady: Promise<void>;
 
   constructor(db: Db) {
     this.collection = db.collection("cars");
-    this.ensureIndexes();
+    this.indexesReady = this.ensureIndexes();
+  }
+
+  async ensureReady(): Promise<void> {
+    await this.indexesReady;
   }
 
   private async ensureIndexes(): Promise<void> {
@@ -52,6 +57,13 @@ export class MongoCarRepository implements CarRepository {
 
   async findPaginated(input: CarQueryData): Promise<PaginatedResult<Car>> {
     const filter: Filter<CarDocument> = {};
+    if (input.id !== undefined) {
+      if (ObjectId.isValid(input.id)) {
+        filter._id = new ObjectId(input.id);
+      } else {
+        filter._id = new ObjectId("000000000000000000000000");
+      }
+    }
     if (input.brand !== undefined) {
       filter.brand = input.brand;
     }

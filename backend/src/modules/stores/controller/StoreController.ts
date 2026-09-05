@@ -4,6 +4,7 @@ import type { StoreIdParams } from "../schema/StoreIdParamsSchema.js";
 import type { CreateStoreRequest } from "../schema/CreateStoreSchema.js";
 import type { UpdateLocationRequest } from "../schema/UpdateLocationSchema.js";
 import type { StoreQueryParams } from "../schema/StoreQuerySchema.js";
+import type { StoreSearchParams } from "../schema/StoreSearchSchema.js";
 import { getValidatedQuery } from "../../shared/index.js";
 
 export class StoreController {
@@ -61,5 +62,11 @@ export class StoreController {
     const { id } = req.params;
     await this.storeService.deleteStore(id);
     return res.status(204).send();
+  }
+
+  async searchStores(req: Request, res: Response): Promise<Response> {
+    const query = getValidatedQuery<StoreSearchParams>(req);
+    const stores = await this.storeService.searchStores(query.q);
+    return res.json(stores);
   }
 }

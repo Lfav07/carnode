@@ -35,8 +35,7 @@ describe("User HTTP integration tests", () => {
   beforeAll(async () => {
     db = await connectTestDatabase();
     userRepository = new MongoUserRepository(db);
-    await db.collection("users").createIndex({ created_at: -1 });
-    await db.collection("users").createIndex({ email: 1, created_at: -1 });
+    await userRepository.ensureReady();
   });
 
   beforeEach(async () => {

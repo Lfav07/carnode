@@ -31,6 +31,11 @@ export class StoreService {
     return stores.map((store) => StoreResponseMapper.toResponse(store));
   }
 
+  async searchStores(term: string): Promise<StoreResponseDto[]> {
+    const stores = await this.storeRepository.searchByName(term);
+    return stores.map((store) => StoreResponseMapper.toResponse(store));
+  }
+
   async createStore(location: StoreLocation): Promise<StoreResponseDto> {
     const store = await this.storeRepository.create({ location });
 

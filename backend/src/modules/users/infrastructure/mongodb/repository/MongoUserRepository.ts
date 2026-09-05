@@ -11,10 +11,15 @@ import { UserConflictError } from "../../../domain/errors/UserConflictError.js";
 
 export class MongoUserRepository implements UserRepository {
   private readonly collection: Collection<UserDocument>;
+  private readonly indexesReady: Promise<void>;
 
   constructor(db: Db) {
     this.collection = db.collection("users");
-    this.ensureIndexes();
+    this.indexesReady = this.ensureIndexes();
+  }
+
+  async ensureReady(): Promise<void> {
+    await this.indexesReady;
   }
 
   private async ensureIndexes(): Promise<void> {

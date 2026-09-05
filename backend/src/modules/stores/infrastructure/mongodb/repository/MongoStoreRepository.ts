@@ -34,6 +34,17 @@ export class MongoStoreRepository implements StoreRepository {
     return docs.map(StoreDocumentMapper.toDomain);
   }
 
+  async searchByName(term: string): Promise<Store[]> {
+    const regex = { $regex: term, $options: "i" };
+    const docs = await this.collection
+      .find({
+        $or: [{ "location.name": regex }, { "location.city": regex }],
+      })
+      .limit(20)  
+      .toArray();
+    return docs.map(StoreDocumentMapper.toDomain);
+  }
+
   async findAll(): Promise<Store[]> {
     const docs = await this.collection.find().toArray();
     return docs.map(StoreDocumentMapper.toDomain);

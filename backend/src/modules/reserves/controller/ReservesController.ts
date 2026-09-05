@@ -7,6 +7,7 @@ import type { UserReserveCreateRequest } from "../schema/userReserveCreateSchema
 import type { ReserveStatusUpdateRequest } from "../schema/ReserveStatusUpdateSchema.js";
 import type { ReserveUpdateRequest } from "../schema/ReserveUpdateSchema.js";
 import type { ReserveUpdateData } from "../domain/types/ReserveUpdateData.js";
+import type { AvailableCarsQueryParams } from "../schema/AvailableCarsQuerySchema.js";
 import { getValidatedQuery } from "../../shared/index.js";
 import { ROLES } from "../../shared/middleware/Roles.js";
 
@@ -124,5 +125,19 @@ export class ReservesController {
     if (req.body.returnInfo !== undefined) input.returnInfo = req.body.returnInfo;
     const reserve = await this.reservesService.updateReserve(id, input);
     return res.json(reserve);
+  }
+
+  async getAvailableCars(
+    req: Request,
+    res: Response,
+  ): Promise<Response> {
+    const query = getValidatedQuery<AvailableCarsQueryParams>(req);
+    const pickupDate = new Date(query.pickupDate);
+    const returnDate = new Date(query.returnDate);
+    const cars = await this.reservesService.getAvailableCarsForDateRange(
+      pickupDate,
+      returnDate,
+    );
+    return res.json(cars);
   }
 }

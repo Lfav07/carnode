@@ -20,7 +20,7 @@ describe("Car repository integration tests", () => {
   beforeAll(async () => {
     db = await connectTestDatabase();
     carRepository = new MongoCarRepository(db);
-    await db.collection("cars").createIndex({ plate: 1 }, { unique: true });
+    await carRepository.ensureReady();
   });
 
   beforeEach(async () => {

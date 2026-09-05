@@ -311,4 +311,16 @@ export class ReservesService {
       );
     }
   }
+
+  async getAvailableCarsForDateRange(
+    pickupDate: Date,
+    returnDate: Date,
+  ): Promise<import("../../cars/dto/response/UserCarResponseDto.js").UserCarResponseDto[]> {
+    const [allAvailable, overlappingIds] = await Promise.all([
+      this.carService.getAllAvailableCars(),
+      this.reserveRepository.findOverlappingCarIds(pickupDate, returnDate),
+    ]);
+    const overlappingSet = new Set(overlappingIds);
+    return allAvailable.filter((car) => !overlappingSet.has(car.id));
+  }
 }

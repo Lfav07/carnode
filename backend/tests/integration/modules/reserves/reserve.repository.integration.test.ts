@@ -17,6 +17,7 @@ describe("Reserve repository integration tests", () => {
   beforeAll(async () => {
     db = await connectTestDatabase();
     repository = new MongoReserveRepository(db);
+    await repository.ensureReady();
   });
 
   beforeEach(async () => {

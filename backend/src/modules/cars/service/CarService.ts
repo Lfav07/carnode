@@ -132,4 +132,15 @@ export class CarService {
     }
     await this.carRepository.updateStatus(id, "DELETED");
   }
+
+  async getAllAvailableCars(): Promise<UserCarResponseDto[]> {
+    const result = await this.carRepository.findPaginated({
+      page: 1,
+      limit: 1000,
+      sortBy: "createdAt",
+      sortOrder: "desc",
+      status: "AVAILABLE",
+    });
+    return result.data.map((car) => CarResponseMapper.toUserResponse(car));
+  }
 }

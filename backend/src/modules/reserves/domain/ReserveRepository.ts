@@ -18,4 +18,9 @@ export interface ReserveRepository {
     pickupDate: Date,
     returnDate: Date,
   ): Promise<boolean>;
+
+  findOverlappingCarIds(
+    pickupDate: Date,
+    returnDate: Date,
+  ): Promise<string[]>;
 }

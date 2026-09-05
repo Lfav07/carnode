@@ -5,6 +5,7 @@ export interface CarQueryData {
   limit: number;
   sortBy: "createdAt" | "brand" | "model" | "dailyRate";
   sortOrder: "asc" | "desc";
+  id?: string | undefined;
   brand?: string | undefined;
   category?: string | undefined;
   status?: CarStatus | undefined;

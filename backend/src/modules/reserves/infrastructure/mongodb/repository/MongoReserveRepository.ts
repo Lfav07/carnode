@@ -17,10 +17,15 @@ import { ReserveNotFoundError } from "../../../domain/errors/ReserveNotFoundErro
 
 export class MongoReserveRepository implements ReserveRepository {
   private readonly collection: Collection<ReserveDocument>;
+  private readonly indexesReady: Promise<void>;
 
   constructor(db: Db) {
     this.collection = db.collection("reserves");
-    this.ensureIndexes();
+    this.indexesReady = this.ensureIndexes();
+  }
+
+  async ensureReady(): Promise<void> {
+    await this.indexesReady;
   }
 
   private async ensureIndexes(): Promise<void> {
@@ -164,5 +169,18 @@ export class MongoReserveRepository implements ReserveRepository {
     });
 
     return count > 0;
+  }
+
+  async findOverlappingCarIds(
+    pickupDate: Date,
+    returnDate: Date,
+  ): Promise<string[]> {
+    const docs = await this.collection
+      .distinct("car_id", {
+        status: { $nin: ["CANCELLED"] },
+        "pickup_info.date": { $lt: returnDate },
+        "return_info.date": { $gt: pickupDate },
+      });
+    return docs.map((id) => id.toString());
   }
 }

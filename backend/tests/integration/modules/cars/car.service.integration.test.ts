@@ -21,6 +21,7 @@ describe("Car service integration tests", () => {
   beforeAll(async () => {
     db = await connectTestDatabase();
     carRepository = new MongoCarRepository(db);
+    await carRepository.ensureReady();
     carService = new CarService(carRepository);
   });
 
