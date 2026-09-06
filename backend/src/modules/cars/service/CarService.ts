@@ -44,7 +44,9 @@ export class CarService {
   async userGetCars(
     queryParams: CarQueryData,
   ): Promise<PaginatedResponse<UserCarResponseDto>> {
+    console.log(`[CarService] userGetCars called with:`, queryParams);
     const result = await this.carRepository.findPaginated(queryParams);
+    console.log(`[CarService] Repository returned:`, { dataCount: result.data.length, totalCount: result.totalCount });
 
     return {
       data: result.data.map((car) => CarResponseMapper.toUserResponse(car)),

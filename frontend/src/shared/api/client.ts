@@ -90,12 +90,15 @@ export function createApiClient(config: ApiClientConfig) {
       : undefined;
 
     try {
+      console.log(`[API] ${fetchInit.method ?? "GET"} ${url}`);
       const response = await fetch(url, {
         ...fetchInit,
         body: serializeBody(body),
         headers,
         signal: controller.signal,
       });
+
+      console.log(`[API] Response: ${response.status} ${response.statusText}`);
 
       // Run response interceptors
       let finalResponse = response;
@@ -109,8 +112,10 @@ export function createApiClient(config: ApiClientConfig) {
       }
 
       const data = await finalResponse.json();
+      console.log(`[API] Data:`, data);
 
       if (!finalResponse.ok) {
+        console.error(`[API] Error response:`, data);
         throw new ApiError(finalResponse.status, data);
       }
 
@@ -119,9 +124,11 @@ export function createApiClient(config: ApiClientConfig) {
       if (error instanceof ApiError) throw error;
 
       if (error instanceof DOMException && error.name === "AbortError") {
+        console.error(`[API] Request timed out`);
         throw new ApiError(408, { message: "Request timed out" });
       }
 
+      console.error(`[API] Network error:`, error);
       throw new ApiError(0, {
         message: error instanceof Error ? error.message : "Network error",
       });

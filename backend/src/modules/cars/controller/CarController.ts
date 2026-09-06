@@ -28,7 +28,11 @@ export class CarController {
   }
 
   async listPublicCars(req: Request, res: Response): Promise<Response> {
+    console.log(`[CarController] listPublicCars called`);
+    console.log(`[CarController] Query params:`, req.query);
+
     const query = getValidatedQuery<CarQueryParams>(req);
+    console.log(`[CarController] Validated query:`, query);
 
     const input = {
       page: query.page,
@@ -46,8 +50,10 @@ export class CarController {
       ...(query.dailyRate !== undefined ? { dailyRate: query.dailyRate } : {}),
       ...(query.plate !== undefined ? { plate: query.plate } : {}),
     };
+    console.log(`[CarController] Service input:`, input);
 
     const cars = await this.carService.userGetCars(input);
+    console.log(`[CarController] Response:`, { dataCount: cars.data.length, meta: cars.meta });
     return res.json(cars);
   }
 
