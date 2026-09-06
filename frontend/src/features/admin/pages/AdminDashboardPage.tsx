@@ -44,10 +44,10 @@ const statCards = [
 ];
 
 export function AdminDashboardPage() {
-  const usersQuery = useAdminUsers({ page: 1, limit: 1 });
-  const carsQuery = useAdminCars({ page: 1, limit: 1 });
+  const usersQuery = useAdminUsers({ page: 1, limit: 1, sortBy: "createdAt", sortOrder: "desc" });
+  const carsQuery = useAdminCars({ page: 1, limit: 1, sortBy: "createdAt", sortOrder: "desc" });
   const storesQuery = useAdminStores();
-  const reservesQuery = useAdminReserves({ page: 1, limit: 5 });
+  const reservesQuery = useAdminReserves({ page: 1, limit: 5, sortBy: "createdAt", sortOrder: "desc" });
 
   const counts = {
     users: usersQuery.data?.meta?.totalCount ?? 0,

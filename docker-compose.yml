@@ -4,9 +4,10 @@ services:
     environment:
       KEYCLOAK_BASE_URI: http://keycloak:8080
       KEYCLOAK_CLIENT_ID: user-service
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-J529zbiOM91EWc2kkkReqXeCjc6gkptKZyxBXQs1K4tBb7ISKkVcaVbKF5clehzaFTC38E5AT9kLk7w2m44OlW} 
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-J529zbiOM91EWc2kkkReqXeCjc6gkptKZyxBXQs1K4tBb7ISKkVcaVbKF5clehzaFTC38E5AT9kLk7w2m44OlW}
       KEYCLOAK_REALM: carnode
       KEYCLOAK_ISSUER: http://keycloak:8080/realms/carnode
+      SEED_DATA: "true"
       MONGODB_URI: mongodb://admin:admin@carnode-db:27017/?authSource=admin
       MONGODB_DATABASE: carnode
     ports:
@@ -14,10 +15,24 @@ services:
     networks:
       - backend
     depends_on:
-      keycloak:
-        condition: service_started
       carnode-db:
         condition: service_healthy
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api/v1
+        VITE_KEYCLOAK_BASE_URI: /auth
+        VITE_KEYCLOAK_REALM: carnode
+        VITE_KEYCLOAK_CLIENT_ID: react-frontend
+
+    ports:
+      - "5173:80"
+    networks:
+      - backend
+
+    restart: unless-stopped
+
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     environment:
@@ -40,6 +55,26 @@ services:
     depends_on:
       keycloak-db:
         condition: service_healthy
+
+  keycloak-init:
+    image: curlimages/curl:latest
+    environment:
+      KC_URL: http://keycloak:8080
+      KC_ADMIN: admin
+      KC_ADMIN_PASS: admin
+      KC_REALM: carnode
+      KC_CLIENT_ID: user-service
+      KC_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-J529zbiOM91EWc2kkkReqXeCjc6gkptKZyxBXQs1K4tBb7ISKkVcaVbKF5clehzaFTC38E5AT9kLk7w2m44OlW}
+      FRONTEND_CLIENT_ID: react-frontend
+    volumes:
+      - ./docker/keycloak/seed.sh:/seed.sh:ro
+    command: ["/bin/sh", "/seed.sh"]
+    networks:
+      - backend
+    depends_on:
+      keycloak:
+        condition: service_started
+    restart: "no"
 
   keycloak-db:
     image: postgres:17
@@ -77,14 +112,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s 
+      start_period: 10s
     networks:
       - backend
 
-
 networks:
   backend:
-  
 
 volumes:
   keycloak_data:

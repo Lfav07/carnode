@@ -56,6 +56,7 @@ export class MongoCarRepository implements CarRepository {
   }
 
   async findPaginated(input: CarQueryData): Promise<PaginatedResult<Car>> {
+    console.log(`[MongoCarRepository] findPaginated called with:`, input);
     const filter: Filter<CarDocument> = {};
     if (input.id !== undefined) {
       if (ObjectId.isValid(input.id)) {
@@ -95,6 +96,7 @@ export class MongoCarRepository implements CarRepository {
       }
       filter.year = yearCondition;
     }
+    console.log(`[MongoCarRepository] MongoDB filter:`, filter);
 
     const skip = (input.page - 1) * input.limit;
     const sortFieldMap: Record<CarQueryData["sortBy"], string> = {
@@ -105,6 +107,7 @@ export class MongoCarRepository implements CarRepository {
     };
     const sortOrder = input.sortOrder === "asc" ? 1 : -1;
 
+    console.log(`[MongoCarRepository] Executing query:`, { skip, limit: input.limit, sort: { [sortFieldMap[input.sortBy]]: sortOrder } });
     const [docs, totalCount] = await Promise.all([
       this.collection
         .find(filter)
@@ -114,6 +117,7 @@ export class MongoCarRepository implements CarRepository {
         .toArray(),
       this.collection.countDocuments(filter),
     ]);
+    console.log(`[MongoCarRepository] Query result:`, { docsCount: docs.length, totalCount });
 
     return {
       data: docs.map(CarDocumentMapper.toDomain),

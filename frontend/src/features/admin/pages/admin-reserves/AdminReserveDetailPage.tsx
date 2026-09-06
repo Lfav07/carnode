@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { ArrowLeft, Loader2, CalendarDays } from "lucide-react";
 import {
@@ -26,7 +26,6 @@ interface EditFormValues {
 
 export function AdminReserveDetailPage() {
   const { reserveId } = useParams<{ reserveId: string }>();
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
 
   const reserveQuery = useAdminReserve(reserveId ?? "");

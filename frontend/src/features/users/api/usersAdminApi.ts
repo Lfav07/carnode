@@ -19,7 +19,18 @@ export async function getUsers(params?: PaginationQueryParams) {
 }
 
 export async function searchUser(params: SearchParams) {
-  return api.get<UserResponse>("/search", { params });
+  const user = await api.get<UserResponse>("/search", { params });
+  return {
+    data: user ? [user] : [],
+    meta: {
+      currentPage: 1,
+      totalPages: 1,
+      totalCount: user ? 1 : 0,
+      limit: 1,
+      hasNext: false,
+      hasPrev: false,
+    },
+  };
 }
 
 export async function getUserById(id: string) {
