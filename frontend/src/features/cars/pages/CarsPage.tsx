@@ -41,7 +41,6 @@ const categoryConfig: Record<
 };
 
 export function CarsPage() {
-  console.log(`[CarsPage] Component mounting`);
   const { data, isLoading, error } = useCars({
     page: 1,
     limit: 100,
@@ -49,10 +48,6 @@ export function CarsPage() {
     sortOrder: "desc",
     status: "AVAILABLE",
   });
-
-  console.log(`[CarsPage] State:`, { isLoading, hasError: !!error, dataCount: data?.data?.length });
-  if (error) console.error(`[CarsPage] Error:`, error);
-  if (data) console.log(`[CarsPage] Full data:`, data);
 
   const groupedCars = useMemo(() => {
     if (!data?.data) return {};

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import {
@@ -26,7 +26,7 @@ export function AdminCarFormPage() {
   const updateCar = useUpdateCar();
 
   const form = useForm<AdminCarFormValues>({
-    resolver: zodResolver(adminCarFormSchema) as Resolver<AdminCarFormValues>,
+    resolver: zodResolver(adminCarFormSchema),
     defaultValues: {
       brand: undefined,
       model: "",

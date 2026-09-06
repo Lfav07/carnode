@@ -32,6 +32,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const initialized = useRef(false);
+
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
