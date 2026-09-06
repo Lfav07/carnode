@@ -6,6 +6,7 @@ services:
       KEYCLOAK_CLIENT_ID: user-service
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-J529zbiOM91EWc2kkkReqXeCjc6gkptKZyxBXQs1K4tBb7ISKkVcaVbKF5clehzaFTC38E5AT9kLk7w2m44OlW} 
       KEYCLOAK_REALM: carnode
+      SEED_DATA: true
       KEYCLOAK_ISSUER: http://keycloak:8080/realms/carnode
       MONGODB_URI: mongodb://admin:admin@carnode-db:27017/?authSource=admin
       MONGODB_DATABASE: carnode
