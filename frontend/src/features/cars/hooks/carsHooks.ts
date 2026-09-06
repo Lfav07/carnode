@@ -3,15 +3,9 @@ import type { CarQueryParams } from "../schemas/carsSchema";
 import { getCarById, getCars } from "../api/carsApi";
 
 export function useCars(params?: CarQueryParams) {
-  console.log(`[CarsHook] useCars called with params:`, params);
   return useQuery({
     queryKey: ["cars", "user", params],
-    queryFn: async () => {
-      console.log(`[CarsHook] queryFn executing...`);
-      const result = await getCars(params);
-      console.log(`[CarsHook] queryFn result:`, result);
-      return result;
-    },
+    queryFn: () => getCars(params),
   });
 }
 
