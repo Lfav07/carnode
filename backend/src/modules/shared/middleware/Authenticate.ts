@@ -15,7 +15,7 @@ declare global {
 }
 
 const client = jwksClient({
-  jwksUri: process.env.KEYCLOAK_JWKS_URI || `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/certs`,
+  jwksUri: `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/certs`,
   cache: true,
   rateLimit: true,
 });
