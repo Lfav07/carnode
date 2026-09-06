@@ -12,6 +12,7 @@ export class App {
 
   constructor(private readonly db: Db) {
     this.configureMiddleware();
+    this.configureHealthCheck();
     this.configureRoutes();
     this.configureErrorHandler();
   }
@@ -19,6 +20,12 @@ export class App {
   private configureMiddleware() {
     this.app.use(express.json());
     this.app.use(cors());
+  }
+
+  private configureHealthCheck() {
+    this.app.get("/health", (_req, res) => {
+      res.status(200).json({ status: "ok" });
+    });
   }
 
   private configureRoutes() {

@@ -1,5 +1,6 @@
 import { App } from "./app.js";
 import { MongoConnection } from "./modules/shared/mongodb/MongoConnection.js";
+import { runSeed } from "./seed/index.js";
 
 const mongo = new MongoConnection(
   process.env["MONGODB_URI"]!,
@@ -7,6 +8,10 @@ const mongo = new MongoConnection(
 );
 
 const db = await mongo.connect();
+
+if (process.env["SEED_DATA"] === "true") {
+  await runSeed(db);
+}
 
 const app = new App(db);
 
