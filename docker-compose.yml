@@ -2,11 +2,12 @@ services:
   backend:
     build: "./backend"
     environment:
-      KEYCLOAK_BASE_URI: http://keycloak:8080
+      KEYCLOAK_BASE_URI: http://keycloak:8080/auth
       KEYCLOAK_CLIENT_ID: user-service
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-J529zbiOM91EWc2kkkReqXeCjc6gkptKZyxBXQs1K4tBb7ISKkVcaVbKF5clehzaFTC38E5AT9kLk7w2m44OlW}
       KEYCLOAK_REALM: carnode
-      KEYCLOAK_ISSUER: http://keycloak:8080/realms/carnode
+      KEYCLOAK_ISSUER: http://localhost:5173/auth/realms/carnode
+      KEYCLOAK_JWKS_URI: http://keycloak:8080/auth/realms/carnode/protocol/openid-connect/certs
       SEED_DATA: "true"
       MONGODB_URI: mongodb://admin:admin@carnode-db:27017/?authSource=admin
       MONGODB_DATABASE: carnode
@@ -36,14 +37,14 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     environment:
-      KC_HOSTNAME_PORT: 8080
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
       KC_DB_USERNAME: kc_admin
       KC_DB_PASSWORD: kc_password
-      KC_HOSTNAME: keycloak
+      KC_HOSTNAME: http://localhost:5173/auth
+      KC_HTTP_RELATIVE_PATH: /auth
       KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
     command: ["start-dev"]
@@ -59,7 +60,7 @@ services:
   keycloak-init:
     image: curlimages/curl:latest
     environment:
-      KC_URL: http://keycloak:8080
+      KC_URL: http://keycloak:8080/auth
       KC_ADMIN: admin
       KC_ADMIN_PASS: admin
       KC_REALM: carnode
