@@ -16,7 +16,6 @@ export function AuthPage() {
   }
 
   const payload = token ? parseJwt(token) : null;
-  const email: string | undefined = payload?.email;
   const name: string | undefined = payload?.name ?? payload?.preferred_username;
 
   if (isLoading) {

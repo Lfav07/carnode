@@ -13,6 +13,7 @@ import type { CarBrand, CarCategory } from "@/features/cars/types";
 import { AdminPageHeader } from "../../components/AdminPageHeader";
 import {
   adminCarFormSchema,
+  type AdminCarFormInput,
   type AdminCarFormValues,
 } from "../../schemas/adminCarFormSchema";
 
@@ -25,7 +26,7 @@ export function AdminCarFormPage() {
   const createCar = useCreateCar();
   const updateCar = useUpdateCar();
 
-  const form = useForm<AdminCarFormValues>({
+  const form = useForm<AdminCarFormInput, unknown, AdminCarFormValues>({
     resolver: zodResolver(adminCarFormSchema),
     defaultValues: {
       brand: undefined,

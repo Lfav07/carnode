@@ -38,9 +38,13 @@ export function AdminUsersListPage() {
     isEmail ? { email: searchQuery } : { keycloakId: searchQuery },
   );
 
-  const activeQuery = isSearchMode ? searchQueryHook : usersQuery;
-  const users = activeQuery.data?.data ?? [];
-  const meta = activeQuery.data?.meta;
+  const users = isSearchMode
+    ? searchQueryHook.data
+      ? [searchQueryHook.data]
+      : []
+    : usersQuery.data?.data ?? [];
+  const meta = isSearchMode ? undefined : usersQuery.data?.meta;
+  const isLoading = isSearchMode ? searchQueryHook.isLoading : usersQuery.isLoading;
 
   function handleSearch(value: string) {
     setSearchParams((prev) => {
@@ -141,7 +145,7 @@ export function AdminUsersListPage() {
       <DataTable
         columns={columns}
         data={users}
-        isLoading={activeQuery.isLoading}
+        isLoading={isLoading}
         onRowClick={(user) => navigate(`/admin/users/${user.id}`)}
         emptyMessage="No users found"
         emptyIcon={Users}
